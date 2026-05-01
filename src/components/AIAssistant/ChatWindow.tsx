@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, MessageSquare } from 'lucide-react';
+import { X, MessageSquare } from 'lucide-react';
 import QuickQuestions from './QuickQuestions';
 
 interface Message {
