@@ -1,82 +1,145 @@
-import React from 'react';
-import { ArrowRight, ShieldCheck, Car, FileSearch } from 'lucide-react';
-import WaveParticlesBackground from './WaveParticlesBackground';
+import React, { useEffect, useRef } from 'react';
 
 const Hero: React.FC = () => {
-  return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden vignette">
-      <WaveParticlesBackground position="full" />
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Wave animation
+    let animationId: number;
+    let time = 0;
+
+    const drawWave = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      {/* Grid background */}
-      <div className="absolute inset-0 grid-bg grid-bg-fade opacity-40" />
+      // Draw multiple waves
+      const waves = [
+        { amplitude: 30, frequency: 0.02, speed: 0.03, color: 'rgba(26, 48, 85, 0.1)' },
+        { amplitude: 20, frequency: 0.03, speed: 0.04, color: 'rgba(212, 85, 58, 0.08)' },
+        { amplitude: 25, frequency: 0.025, speed: 0.035, color: 'rgba(201, 162, 39, 0.06)' },
+      ];
 
-      {/* 优化：移除巨大的模糊效果，使用更轻量的渐变 */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full" style={{ filter: 'blur(40px)' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/5 rounded-full" style={{ filter: 'blur(30px)' }} />
+      waves.forEach((wave) => {
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2);
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        {/* Pill badge */}
-        <div className="inline-flex items-center gap-2 mb-8 opacity-0 animate-fade-in-up">
-          <span className="pill">
-            <Car size={12} />
-            车企数字预售消费者权益守护
+        for (let x = 0; x < canvas.width; x++) {
+          const y = canvas.height / 2 + 
+            Math.sin(x * wave.frequency + time * wave.speed) * wave.amplitude +
+            Math.sin(x * wave.frequency * 0.5 + time * wave.speed * 0.7) * wave.amplitude * 0.5;
+          ctx.lineTo(x, y);
+        }
+
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.lineTo(0, canvas.height);
+        ctx.closePath();
+        ctx.fillStyle = wave.color;
+        ctx.fill();
+      });
+
+      time++;
+      animationId = requestAnimationFrame(drawWave);
+    };
+
+    drawWave();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden ue-washi">
+      {/* Wave Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: 'none' }}
+      />
+
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-10 w-16 h-16 border-2 border-[#1a3055]/20 rotate-45 ue-animate-float" />
+      <div className="absolute bottom-20 right-10 w-12 h-12 bg-[#d4553a]/20 border-2 border-[#d4553a]/30 ue-animate-float" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/3 right-20 w-8 h-8 bg-[#c9a227]/20 rounded-full ue-animate-float" style={{ animationDelay: '2s' }} />
+
+      {/* Content */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8 text-center">
+        {/* Stamp */}
+        <div className="inline-block mb-8">
+          <span className="ue-stamp text-sm">
+            中山大学研究项目
           </span>
         </div>
 
-        {/* Main heading */}
-        <h1 className="font-display text-5xl md:text-7xl font-bold leading-tight mb-6 opacity-0 animate-fade-in-up delay-100">
-          <span className="text-white">AI 驱动的</span>
+        {/* Title */}
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#1a3055] mb-6 leading-tight tracking-wider">
+          车企消费者
           <br />
-          <span className="text-glow bg-gradient-to-r from-primary-300 via-accent to-blue-400 bg-clip-text text-transparent">
-            购车合同守护
-          </span>
+          <span className="text-[#d4553a]">权益守护</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-in-up delay-200">
-          一键识别购车定金陷阱、分析预售合同条款是否侵权、获取专业维权建议。
-          <br className="hidden md:block" />
-          让 AI 为您的购车权益保驾护航。
+        <p className="text-lg md:text-xl text-[#1a3055]/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+          基于AI技术的专业法律咨询平台，帮助您识别购车合同中的不公平条款，
+          守护您的合法权益
         </p>
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 opacity-0 animate-fade-in-up delay-300">
-          <a
-            href="#ai-chat"
-            className="group inline-flex items-center gap-2.5 px-8 py-4 bg-primary hover:bg-primary-600 text-white font-semibold btn-clip transition-all duration-300 glow-blue hover:glow-blue"
-          >
-            <span>免费咨询 AI</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </a>
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#features"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white/80 hover:text-white border border-white/[0.08] hover:border-white/[0.15] rounded-lg transition-all duration-300"
+            className="ue-btn ue-btn-vermilion text-base px-8 py-4"
           >
-            了解更多
+            了解功能
+          </a>
+          <a
+            href="#contact"
+            className="ue-btn ue-btn-outline text-base px-8 py-4"
+          >
+            免费咨询
           </a>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto opacity-0 animate-fade-in-up delay-400">
+        <div className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto">
           {[
-            { icon: FileSearch, value: '500+', label: '购车合同已分析' },
-            { icon: Car, value: '95%', label: '识别准确率' },
-            { icon: ShieldCheck, value: '1,200+', label: '车主信赖' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <stat.icon size={20} className="text-accent mx-auto mb-2 opacity-60" />
-              <div className="font-mono text-xl font-bold text-white">{stat.value}</div>
-              <div className="text-xs text-white/40 mt-1">{stat.label}</div>
+            { value: '500+', label: '成功案例' },
+            { value: '98%', label: '满意度' },
+            { value: '24h', label: '响应时间' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-[#d4553a]">
+                {stat.value}
+              </div>
+              <div className="text-sm text-[#1a3055]/60 mt-1">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-0 animate-fade-in-up delay-500">
-        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Scroll</span>
-        <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1">
-          <div className="w-1 h-2 bg-accent rounded-full animate-bounce" />
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-sm text-[#1a3055]/40">向下滚动</span>
+          <div className="w-6 h-10 border-2 border-[#1a3055]/30 rounded-full flex justify-center">
+            <div className="w-1.5 h-1.5 bg-[#1a3055]/40 rounded-full mt-2 animate-bounce" />
+          </div>
         </div>
       </div>
     </section>

@@ -1,99 +1,103 @@
 import React from 'react';
-import { Quote, Star } from 'lucide-react';
-
-const testimonials = [
-  {
-    name: '张女士',
-    role: '比亚迪车主',
-    content: '买比亚迪时差点没注意到定金不可退的条款，多亏权盾 AI 提前提醒，帮我避免了 5000 元损失。',
-    rating: 5,
-  },
-  {
-    name: '李先生',
-    role: '特斯拉车主',
-    content: '特斯拉购车合同密密麻麻看不懂，AI 帮我逐条分析，发现了三处不合理的格式条款，和销售协商后成功修改。',
-    rating: 5,
-  },
-  {
-    name: '王同学',
-    role: '小鹏车主',
-    content: '小鹏的预售合同里藏着不少坑，用权盾查了才知道商家违规了。按 AI 给的维权指南，一周就解决了。',
-    rating: 5,
-  },
-  {
-    name: '陈先生',
-    role: '蔚来车主',
-    content: '蔚来的购车合同里有很多模糊条款，AI 帮我明确了每一项的责任归属，提车过程中省了不少麻烦。',
-    rating: 4,
-  },
-  {
-    name: '刘女士',
-    role: '理想车主',
-    content: '理想汽车的定金条款不清晰，权盾 AI 帮我分析了法律风险，最终成功拿回了定金。',
-    rating: 5,
-  },
-  {
-    name: '赵先生',
-    role: '吉利车主',
-    content: '吉利4S店的购车合同里藏着金融服务费，AI 都给标出来了。现在签合同前都会先用权盾扫一遍。',
-    rating: 5,
-  },
-];
-
-const MarqueeRow: React.FC<{ items: typeof testimonials; reverse?: boolean }> = ({ items, reverse }) => (
-  <div className="flex gap-4 overflow-hidden">
-    <div className={`flex gap-4 ${reverse ? 'marquee-reverse' : 'marquee'}`}>
-      {[...items, ...items].map((t, i) => (
-        <div
-          key={i}
-          className="flex-shrink-0 w-80 glass-card rounded-xl p-5 border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-300"
-        >
-          <div className="flex items-center gap-1 mb-3">
-            {Array.from({ length: t.rating }).map((_, j) => (
-              <Star key={j} size={12} className="fill-amber-400 text-amber-400" />
-            ))}
-          </div>
-          <Quote size={16} className="text-primary/40 mb-2" />
-          <p className="text-sm text-white/60 leading-relaxed mb-4 line-clamp-3">{t.content}</p>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-blue-600/30 flex items-center justify-center text-xs font-bold text-white/80">
-              {t.name[0]}
-            </div>
-            <div>
-              <div className="text-sm font-medium text-white/80">{t.name}</div>
-              <div className="text-xs text-white/40">{t.role}</div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
 
 const Cases: React.FC = () => {
-  const firstHalf = testimonials.slice(0, 3);
-  const secondHalf = testimonials.slice(3);
+  const cases = [
+    {
+      title: '定金不可退纠纷',
+      category: '定金陷阱',
+      description: '消费者在4S店缴纳定金后，因个人原因无法购车，商家拒绝退还定金。通过法律分析，发现合同条款存在霸王条款嫌疑。',
+      result: '成功维权，全额退还定金',
+      color: '#d4553a',
+    },
+    {
+      title: '预售车型配置变更',
+      category: '预售条款',
+      description: '消费者预订的新能源汽车，交付时发现配置与预售宣传不符。商家以"预售条款已说明"为由拒绝赔偿。',
+      result: '协商解决，获得配置补偿',
+      color: '#c9a227',
+    },
+    {
+      title: '金融服务费争议',
+      category: '隐形收费',
+      description: '购车时被强制收取金融服务费，消费者认为该费用不合理且未提前告知。',
+      result: '投诉成功，退还服务费',
+      color: '#2a5a8c',
+    },
+    {
+      title: '质量问题维权',
+      category: '产品质量',
+      description: '新车交付后发现存在质量问题，多次维修仍未解决。消费者要求退车，商家以各种理由拖延。',
+      result: '法律介入，成功退车',
+      color: '#747800',
+    },
+  ];
 
   return (
-    <section id="cases" className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute inset-0 grid-bg grid-bg-fade opacity-20" />
-
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16 px-6">
-          <span className="pill mb-4 inline-flex">用户故事</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-white mt-4 mb-4">
-            已帮助数千车主守护购车权益
+    <section id="cases" className="py-20 md:py-32 bg-[#1a3055]">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <span className="inline-block px-4 py-1 border-2 border-[#f5f0e1] text-[#f5f0e1] text-sm font-bold tracking-wider mb-4">
+            成功案例
+          </span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#f5f0e1] mb-4">
+            真实维权案例
           </h2>
-          <p className="text-white/50 max-w-xl mx-auto">
-            真实案例，真实反馈。每一次购车咨询，都是一份信任
+          <p className="text-[#f5f0e1]/60 max-w-2xl mx-auto">
+            以下是我们帮助消费者成功维权的真实案例，为您提供参考和借鉴
           </p>
         </div>
 
-        {/* Marquee */}
-        <div className="space-y-4">
-          <MarqueeRow items={firstHalf} />
-          <MarqueeRow items={secondHalf} reverse />
+        {/* Cases Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {cases.map((caseItem, index) => (
+            <div
+              key={caseItem.title}
+              className="bg-[#f5f0e1] border-2 border-[#1a3055] p-6 md:p-8 ue-animate-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              {/* Category Tag */}
+              <span 
+                className="inline-block px-3 py-1 text-xs font-bold tracking-wider mb-4"
+                style={{ 
+                  background: caseItem.color,
+                  color: '#f5f0e1',
+                }}
+              >
+                {caseItem.category}
+              </span>
+
+              {/* Title */}
+              <h3 className="text-xl font-bold text-[#1a3055] mb-3 tracking-wider">
+                {caseItem.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-[#1a3055]/70 leading-relaxed mb-4">
+                {caseItem.description}
+              </p>
+
+              {/* Result */}
+              <div className="flex items-center gap-2 pt-4 border-t-2 border-[#1a3055]/10">
+                <svg className="w-5 h-5 text-[#d4553a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm font-bold text-[#1a3055]">
+                  {caseItem.result}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <a
+            href="#contact"
+            className="ue-btn bg-[#d4553a] border-[#d4553a] text-[#f5f0e1] px-8 py-4"
+          >
+            咨询您的案例
+          </a>
         </div>
       </div>
     </section>

@@ -1,193 +1,137 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Car, Scale, AlertTriangle } from 'lucide-react';
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-const quickPrompts = [
-  { icon: Car, text: '分析这段购车合同条款是否合规' },
-  { icon: Scale, text: '定金不可退是否合法？' },
-  { icon: AlertTriangle, text: '商家拒绝交车怎么办？' },
-];
+import React, { useState } from 'react';
 
 const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: '您好！我是权盾 AI 购车法律助手 🛡️\n\n我可以帮您：\n• 分析购车合同条款是否合规\n• 识别购车定金陷阱和霸王条款\n• 提供购车维权建议和法律依据\n\n请描述您的购车问题，或上传购车合同开始分析。',
-      timestamp: new Date(),
-    },
-  ]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; text: string }>>([]);
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const quickQuestions = [
+    '分析这段购车合同条款是否合规',
+    '定金不可退是否合法？',
+    '商家拒绝交车怎么办？',
+    '预售合同有哪些常见陷阱？',
+  ];
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSend = async (text?: string) => {
-    const message = text || input.trim();
-    if (!message || isTyping) return;
-
+  const handleSend = () => {
+    if (!input.trim()) return;
+    
+    setMessages(prev => [...prev, { role: 'user', text: input }]);
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: message, timestamp: new Date() }]);
-    setIsTyping(true);
-
+    
     // Simulate AI response
     setTimeout(() => {
-      const responses: Record<string, string> = {
-        '定金不可退是否合法？': '根据《民法典》第五百八十七条，定金罚则规定：\n\n**给付定金的一方不履行债务的，无权请求返还定金**\n\n但以下情况可主张退还：\n1. 商家存在违约行为\n2. 定金超过合同标的额20%的部分\n3. 合同存在重大误解或显失公平\n4. 商家未尽到充分告知义务\n\n⚠️ **关键提示**：如果商家在缔约时未以显著方式提示"定金不可退"，可能构成缔约过失，消费者可主张赔偿信赖利益损失。',
-        '商家拒绝交车怎么办？': '商家拒绝交车时，您可以按以下步骤维权：\n\n**第一步：确认拒绝理由**\n• 商家单方面违约\n• 配置变更导致无法交付\n• 价格变动拒绝履行\n\n**第二步：收集证据**\n• 保存购车合同、订单确认书\n• 保留聊天记录、电话录音\n• 保存付款凭证\n\n**第三步：维权渠道**\n1. 与商家协商 → 2. 厂家投诉 → 3. 12315热线 → 4. 法院起诉\n\n💡 建议先通过厂家400电话投诉，通常能快速解决。',
-      };
-
-      const defaultResponse = '感谢您的咨询！基于您的描述，我来分析一下：\n\n**初步判断**：\n您提到的情况涉及购车消费者权益保护的相关问题。根据《汽车销售管理办法》第十四条，经销商不得限定消费者户籍所在地。\n\n**建议**：\n1. 保留所有相关证据（购车合同、聊天记录、支付凭证）\n2. 与商家协商解决\n3. 如协商不成，可向12315投诉或联系厂家\n\n如需更详细的分析，请提供更多购车合同具体条款内容。';
-
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: responses[message] || defaultResponse,
-          timestamp: new Date(),
-        },
-      ]);
-      setIsTyping(false);
-    }, 1500);
+      setMessages(prev => [...prev, { 
+        role: 'ai', 
+        text: '感谢您的咨询。根据您描述的情况，我建议您首先保留相关证据，包括合同文本、付款凭证、沟通记录等。然后可以向消费者协会投诉或寻求法律援助。' 
+      }]);
+    }, 1000);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+  const handleQuickQuestion = (question: string) => {
+    setInput(question);
+    handleSend();
   };
 
   return (
-    <section id="ai-chat" className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute inset-0 grid-bg grid-bg-fade opacity-20" />
-      
-      {/* Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px]" />
+    <>
+      {/* Floating Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-[#d4553a] border-2 border-[#1a3055] shadow-[3px_3px_0px_#1a3055] flex items-center justify-center hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-50"
+      >
+        <svg className="w-6 h-6 text-[#f5f0e1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </button>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <span className="pill mb-4 inline-flex">
-            <Sparkles size={12} />
-            AI 购车法律助手
-          </span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-white mt-4 mb-4">
-            随时咨询，即时解答
-          </h2>
-          <p className="text-white/50 max-w-xl mx-auto">
-            基于海量购车纠纷数据训练的 AI 助手，为您提供专业的购车权益分析
-          </p>
-        </div>
+      {/* Chat Panel */}
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 w-[380px] max-h-[600px] bg-[#f5f0e1] border-2 border-[#1a3055] shadow-[6px_6px_0px_#1a3055] flex flex-col z-50 ue-animate-in">
+          {/* Header */}
+          <div className="bg-[#1a3055] text-[#f5f0e1] p-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold tracking-wider">法律咨询助手</h3>
+              <p className="text-xs text-[#f5f0e1]/60">购车权益守护 · 实时解答</p>
+            </div>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="w-8 h-8 border-2 border-[#f5f0e1]/30 flex items-center justify-center hover:border-[#d4553a] hover:text-[#d4553a] transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-        {/* Chat Container */}
-        <div className="glass-card rounded-2xl overflow-hidden border border-white/[0.08]" style={{ boxShadow: '0 0 60px rgba(59, 130, 246, 0.08)' }}>
           {/* Messages */}
-          <div className="h-[450px] overflow-y-auto p-6 space-y-4">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-              >
-                <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                  msg.role === 'assistant' 
-                    ? 'bg-primary/20 border border-primary/30' 
-                    : 'bg-white/10 border border-white/10'
-                }`}>
-                  {msg.role === 'assistant' ? (
-                    <Bot size={16} className="text-accent" />
-                  ) : (
-                    <User size={16} className="text-white/70" />
-                  )}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[300px] max-h-[400px]">
+            {/* Welcome Message */}
+            {messages.length === 0 && (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-[#d4553a] border-2 border-[#1a3055] flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-[#f5f0e1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
                 </div>
-                <div className={`max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
-                  msg.role === 'assistant'
-                    ? 'bg-white/[0.04] border border-white/[0.06] text-white/80'
-                    : 'bg-primary/20 border border-primary/20 text-white'
-                }`}>
-                  <div className="whitespace-pre-wrap">
-                    {msg.content.split('\n').map((line, j) => {
-                      if (line.startsWith('**') && line.endsWith('**')) {
-                        return <p key={j} className="font-semibold text-white mt-2 first:mt-0">{line.replace(/\*\*/g, '')}</p>;
-                      }
-                      if (line.startsWith('•') || line.startsWith('1.') || line.startsWith('2.') || line.startsWith('3.') || line.startsWith('4.')) {
-                        return <p key={j} className="ml-2">{line}</p>;
-                      }
-                      if (line.startsWith('⚠️') || line.startsWith('💡')) {
-                        return <p key={j} className="mt-2 text-amber-400/90">{line}</p>;
-                      }
-                      return <p key={j}>{line}</p>;
-                    })}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {isTyping && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
-                  <Bot size={16} className="text-accent" />
-                </div>
-                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce delay-100" />
-                    <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce delay-200" />
-                  </div>
+                <h4 className="font-bold text-[#1a3055] mb-2">您好！我是AI法律助手</h4>
+                <p className="text-sm text-[#1a3055]/60 mb-6">
+                  我可以帮您分析购车合同条款、识别定金陷阱、提供维权建议。
+                </p>
+                <div className="space-y-2">
+                  {quickQuestions.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => handleQuickQuestion(q)}
+                      className="w-full text-left px-4 py-2 bg-[#1a3055]/5 border-2 border-[#1a3055]/10 text-sm text-[#1a3055] hover:border-[#d4553a] hover:bg-[#d4553a]/5 transition-all"
+                    >
+                      {q}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
-          </div>
 
-          {/* Quick prompts */}
-          <div className="px-6 py-3 border-t border-white/[0.04] flex gap-2 overflow-x-auto">
-            {quickPrompts.map((prompt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSend(prompt.text)}
-                className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] hover:border-white/[0.12] rounded-full text-xs text-white/50 hover:text-white/70 transition-all duration-200"
-              >
-                <prompt.icon size={12} />
-                {prompt.text}
-              </button>
+            {/* Chat Messages */}
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div 
+                  className={`max-w-[80%] p-3 ${
+                    msg.role === 'user' 
+                      ? 'bg-[#1a3055] text-[#f5f0e1] border-2 border-[#1a3055]' 
+                      : 'bg-[#f5f0e1] text-[#1a3055] border-2 border-[#1a3055]'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
             ))}
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-white/[0.06]">
-            <div className="flex gap-3">
-              <textarea
+          <div className="p-4 border-t-2 border-[#1a3055]/10">
+            <div className="flex gap-2">
+              <input
+                type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="描述您的购车合同问题或消费纠纷..."
-                className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
-                rows={1}
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="输入您的问题..."
+                className="flex-1 ue-input text-sm"
               />
-              <button
-                onClick={() => handleSend()}
-                disabled={!input.trim() || isTyping}
-                className="flex-shrink-0 w-11 h-11 bg-primary hover:bg-primary-600 disabled:bg-white/[0.04] disabled:text-white/20 text-white rounded-xl flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed"
+              <button 
+                onClick={handleSend}
+                className="ue-btn ue-btn-vermilion px-4 py-2 text-sm"
               >
-                <Send size={18} />
+                发送
               </button>
             </div>
+            <p className="text-xs text-[#1a3055]/40 mt-2 text-center">
+              仅提供参考，不构成法律建议
+            </p>
           </div>
         </div>
-      </div>
-    </section>
+      )}
+    </>
   );
 };
 

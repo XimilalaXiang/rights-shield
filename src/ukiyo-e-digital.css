@@ -1,0 +1,279 @@
+/* ============================================
+   浮世绘数字风 (Ukiyo-e Digital) Design System
+   灵感源自日本浮世绘木版画
+   ============================================ */
+
+/* Google Fonts - Noto Serif JP for Japanese aesthetic */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+
+:root {
+  /* Ukiyo-e Color Palette */
+  --ue-indigo: #1a3055;
+  --ue-rice: #f5f0e1;
+  --ue-vermilion: #d4553a;
+  --ue-gold: #c9a227;
+  --ue-deep-blue: #2a5a8c;
+  --ue-olive: #747800;
+  
+  /* Semantic Colors */
+  --ue-bg: var(--ue-rice);
+  --ue-text: var(--ue-indigo);
+  --ue-accent: var(--ue-vermilion);
+  --ue-highlight: var(--ue-gold);
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Styles */
+body {
+  font-family: 'Zen Kaku Gothic New', 'Noto Serif JP', serif;
+  background-color: var(--ue-bg);
+  color: var(--ue-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+/* Woodblock Print Texture */
+.ue-washi {
+  background-color: var(--ue-rice);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(26, 48, 85, 0.02) 0%, transparent 80%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,25 Q50,0 100,25 T200,25' fill='none' stroke='%231a3055' stroke-width='1' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: cover, 200px 50px;
+  background-repeat: no-repeat, repeat;
+}
+
+/* Wave Pattern Background */
+.ue-wave-bg {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,25 Q50,0 100,25 T200,25' fill='none' stroke='%231a3055' stroke-width='1' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 200px 50px;
+  background-repeat: repeat;
+}
+
+/* Hard-edge Shadows */
+.ue-shadow-sm {
+  box-shadow: 2px 2px 0px var(--ue-indigo);
+}
+
+.ue-shadow-md {
+  box-shadow: 4px 4px 0px var(--ue-indigo);
+}
+
+.ue-shadow-lg {
+  box-shadow: 6px 6px 0px var(--ue-indigo);
+}
+
+.ue-shadow-vermilion {
+  box-shadow: 4px 4px 0px var(--ue-vermilion);
+}
+
+.ue-shadow-gold {
+  box-shadow: 4px 4px 0px var(--ue-gold);
+}
+
+/* Stamp Effect (朱印) */
+.ue-stamp {
+  border: 2px solid var(--ue-vermilion);
+  padding: 4px 8px;
+  color: var(--ue-vermilion);
+  font-weight: bold;
+  display: inline-block;
+  transform: rotate(-3deg);
+}
+
+/* Card Styles */
+.ue-card {
+  background: var(--ue-rice);
+  border: 2px solid var(--ue-indigo);
+  box-shadow: 4px 4px 0px var(--ue-indigo);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.ue-card:hover {
+  box-shadow: 6px 6px 0px var(--ue-vermilion);
+  transform: translateY(-2px);
+}
+
+.ue-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(26, 48, 85, 0.05), transparent);
+  pointer-events: none;
+}
+
+.ue-card:hover::before {
+  opacity: 1;
+}
+
+/* Button Styles */
+.ue-btn {
+  background: var(--ue-indigo);
+  color: var(--ue-rice);
+  border: 2px solid var(--ue-indigo);
+  box-shadow: 3px 3px 0px var(--ue-indigo);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ue-btn:hover {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.ue-btn:active {
+  transform: translate(3px, 3px);
+}
+
+.ue-btn-vermilion {
+  background: var(--ue-vermilion);
+  border-color: var(--ue-vermilion);
+  box-shadow: 3px 3px 0px var(--ue-indigo);
+}
+
+.ue-btn-outline {
+  background: transparent;
+  color: var(--ue-indigo);
+}
+
+/* Input Styles */
+.ue-input {
+  background: var(--ue-rice);
+  border: 2px solid rgba(26, 48, 85, 0.6);
+  color: var(--ue-indigo);
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+}
+
+.ue-input:focus {
+  outline: none;
+  border-color: var(--ue-vermilion);
+  box-shadow: 2px 2px 0px var(--ue-vermilion);
+}
+
+.ue-input::placeholder {
+  color: rgba(26, 48, 85, 0.4);
+}
+
+/* Animations */
+@keyframes ue-fade-in {
+  from { 
+    opacity: 0; 
+    transform: translateY(8px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes ue-float {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+  }
+}
+
+@keyframes ue-wave {
+  0% { 
+    transform: translateX(0); 
+  }
+  100% { 
+    transform: translateX(-50%); 
+  }
+}
+
+.ue-animate-in {
+  animation: ue-fade-in 0.5s ease-out both;
+}
+
+.ue-animate-float {
+  animation: ue-float 3s ease-in-out infinite;
+}
+
+/* Decorative Elements */
+.ue-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ue-indigo), transparent);
+  margin: 2rem 0;
+}
+
+.ue-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ue-vermilion);
+  display: inline-block;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ue-rice);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ue-indigo);
+  border: 1px solid var(--ue-rice);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ue-vermilion);
+}
+
+/* Selection */
+::selection {
+  background: var(--ue-vermilion);
+  color: var(--ue-rice);
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--ue-vermilion);
+  outline-offset: 2px;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .ue-card {
+    box-shadow: 2px 2px 0px var(--ue-indigo);
+  }
+  
+  .ue-card:hover {
+    box-shadow: 4px 4px 0px var(--ue-vermilion);
+  }
+  
+  .ue-btn {
+    box-shadow: 2px 2px 0px var(--ue-indigo);
+  }
+}
