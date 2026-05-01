@@ -1,0 +1,285 @@
+/* ============================================
+   Neo-Brutal (新野兽派) Design System
+   Raw. Bold. Brutal.
+   ============================================ */
+
+/* Google Fonts - Space Grotesk for headings, JetBrains Mono for body */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  /* Neo-Brutal Color Palette */
+  --nb-pink: #ff006e;
+  --nb-green: #ccff00;
+  --nb-blue: #00d9ff;
+  --nb-orange: #ff9500;
+  --nb-black: #000000;
+  --nb-white: #ffffff;
+  
+  /* Semantic Colors */
+  --nb-bg: var(--nb-white);
+  --nb-text: var(--nb-black);
+  --nb-accent: var(--nb-pink);
+  --nb-success: var(--nb-green);
+  --nb-info: var(--nb-blue);
+  --nb-warning: var(--nb-orange);
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Styles */
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: var(--nb-bg);
+  color: var(--nb-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* Neo-Brutal Card */
+.nb-card {
+  background: var(--nb-white);
+  border: 4px solid var(--nb-black);
+  box-shadow: 8px 8px 0px var(--nb-black);
+  transition: all 150ms ease-out;
+  position: relative;
+}
+
+.nb-card:hover {
+  box-shadow: 12px 12px 0px var(--nb-pink);
+  transform: translate(-2px, -2px);
+}
+
+.nb-card:active {
+  box-shadow: none;
+  transform: translate(8px, 8px);
+}
+
+/* Button Styles */
+.nb-btn {
+  background: var(--nb-white);
+  color: var(--nb-black);
+  border: 4px solid var(--nb-black);
+  box-shadow: 8px 8px 0px var(--nb-black);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nb-btn:hover {
+  background: var(--nb-green);
+  box-shadow: 12px 12px 0px var(--nb-pink);
+  transform: translate(-2px, -2px);
+}
+
+.nb-btn:active {
+  box-shadow: none;
+  transform: translate(8px, 8px);
+}
+
+.nb-btn-primary {
+  background: var(--nb-pink);
+  color: var(--nb-white);
+}
+
+.nb-btn-primary:hover {
+  background: var(--nb-green);
+  color: var(--nb-black);
+}
+
+.nb-btn-outline {
+  background: transparent;
+  color: var(--nb-black);
+}
+
+.nb-btn-outline:hover {
+  background: var(--nb-blue);
+  color: var(--nb-black);
+}
+
+/* Input Styles */
+.nb-input {
+  background: var(--nb-white);
+  border: 4px solid var(--nb-black);
+  color: var(--nb-black);
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.75rem 1rem;
+  transition: all 150ms ease-out;
+  width: 100%;
+}
+
+.nb-input:focus {
+  outline: none;
+  box-shadow: 8px 8px 0px var(--nb-pink);
+}
+
+.nb-input::placeholder {
+  color: var(--nb-black);
+  opacity: 0.4;
+}
+
+/* Badge Styles */
+.nb-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--nb-black);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nb-badge-pink {
+  background: var(--nb-pink);
+  color: var(--nb-white);
+}
+
+.nb-badge-green {
+  background: var(--nb-green);
+  color: var(--nb-black);
+}
+
+.nb-badge-blue {
+  background: var(--nb-blue);
+  color: var(--nb-black);
+}
+
+.nb-badge-orange {
+  background: var(--nb-orange);
+  color: var(--nb-black);
+}
+
+/* Animations */
+@keyframes nb-bounce-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.05); 
+  }
+  70% { 
+    transform: scale(0.9); 
+  }
+  100% { 
+    transform: scale(1); 
+  }
+}
+
+@keyframes nb-shake {
+  0%, 100% { 
+    transform: translateX(0); 
+  }
+  10%, 30%, 50%, 70%, 90% { 
+    transform: translateX(-4px); 
+  }
+  20%, 40%, 60%, 80% { 
+    transform: translateX(4px); 
+  }
+}
+
+.nb-animate-bounce {
+  animation: nb-bounce-in 0.5s ease-out both;
+}
+
+.nb-animate-shake {
+  animation: nb-shake 0.5s ease-out both;
+}
+
+/* Decorative Elements */
+.nb-divider {
+  height: 4px;
+  background: var(--nb-black);
+  margin: 2rem 0;
+}
+
+.nb-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--nb-pink);
+  display: inline-block;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--nb-white);
+  border-left: 4px solid var(--nb-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--nb-black);
+  border: 2px solid var(--nb-white);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nb-pink);
+}
+
+/* Selection */
+::selection {
+  background: var(--nb-pink);
+  color: var(--nb-white);
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 4px solid var(--nb-pink);
+  outline-offset: 2px;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .nb-card {
+    box-shadow: 4px 4px 0px var(--nb-black);
+  }
+  
+  .nb-card:hover {
+    box-shadow: 6px 6px 0px var(--nb-pink);
+  }
+  
+  .nb-card:active {
+    box-shadow: none;
+    transform: translate(4px, 4px);
+  }
+  
+  .nb-btn {
+    box-shadow: 4px 4px 0px var(--nb-black);
+  }
+  
+  .nb-btn:hover {
+    box-shadow: 6px 6px 0px var(--nb-pink);
+  }
+  
+  .nb-btn:active {
+    box-shadow: none;
+    transform: translate(4px, 4px);
+  }
+}

@@ -1,21 +1,25 @@
+import { useState } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Features from './components/Features'
 import Cases from './components/Cases'
 import Footer from './components/Footer'
-import AIAssistant from './components/AIAssistant'
+import AIChat from './components/AIChat'
+import './neo-brutal.css'
 
 function App() {
+  const [chatOpen, setChatOpen] = useState(false)
+
   return (
-    <div className="dark min-h-screen bg-black text-white">
-      <Navbar />
+    <div className="min-h-screen bg-white text-black">
+      <Navbar onOpenChat={() => setChatOpen(true)} />
       <main>
-        <Hero />
+        <Hero onOpenChat={() => setChatOpen(true)} />
         <Features />
-        <Cases />
+        <Cases onOpenChat={() => setChatOpen(true)} />
       </main>
       <Footer />
-      <AIAssistant />
+      <AIChat isOpen={chatOpen} onToggle={() => setChatOpen(!chatOpen)} onClose={() => setChatOpen(false)} />
     </div>
   )
 }

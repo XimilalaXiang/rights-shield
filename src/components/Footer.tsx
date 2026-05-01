@@ -1,43 +1,43 @@
 import React from 'react';
-import { Shield, Globe, Mail, ExternalLink } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer id="about" className="relative border-t border-white/[0.06]">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
+    <footer id="about" className="bg-black text-white py-16 md:py-20 border-t-4 border-white">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
-                <Shield size={16} className="text-accent" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-[#ff006e] border-4 border-white flex items-center justify-center">
+                <span className="text-white font-bold text-xl">权</span>
               </div>
-              <div>
-                <span className="font-display text-sm font-semibold text-white">权盾</span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 ml-2">RightsShield</span>
-              </div>
+              <span className="text-3xl font-bold tracking-wider uppercase">权盾</span>
             </div>
-            <p className="text-sm text-white/40 leading-relaxed max-w-sm mb-6">
-              基于 AI 技术的购车消费者权益保护平台。我们致力于让每一份购车合同都透明可信赖，
-              让每一位车主都能平等、便捷地获取法律知识与维权支持。
+            <p className="text-white/60 leading-relaxed mb-6 max-w-md">
+              基于AI技术的专业法律咨询平台，致力于守护消费者合法权益，
+              让每一位车主都能安心购车。
             </p>
-            <div className="flex items-center gap-3">
-              <a href="#" className="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/70 transition-all">
-                <Globe size={16} />
+            <div className="flex gap-4">
+              {/* Social Icons */}
+              <a href="#" className="nb-btn nb-btn-outline px-3 py-2 text-sm">
+                𝕏
               </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/70 transition-all">
-                <Mail size={16} />
+              <a href="#" className="nb-btn nb-btn-outline px-3 py-2 text-sm">
+                ◆
+              </a>
+              <a href="#" className="nb-btn nb-btn-outline px-3 py-2 text-sm">
+                ▣
               </a>
             </div>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="font-mono text-xs uppercase tracking-[0.15em] text-white/30 mb-4">产品</h4>
-            <ul className="space-y-2.5">
-              {['购车合同扫描', '预售条款分析', 'AI 购车助手', '购车维权知识库'].map((item) => (
+            <h4 className="text-lg font-bold mb-4 tracking-wider uppercase">快速链接</h4>
+            <ul className="space-y-3">
+              {['首页', '功能', '案例', '关于'].map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-sm text-white/50 hover:text-white/80 transition-colors flex items-center gap-1">
+                  <a href={`#${item}`} className="text-white/60 hover:text-[#ff006e] transition-colors font-bold uppercase">
                     {item}
                   </a>
                 </li>
@@ -45,36 +45,37 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
-            <h4 className="font-mono text-xs uppercase tracking-[0.15em] text-white/30 mb-4">法律资源</h4>
-            <ul className="space-y-2.5">
-              {[
-                { name: '民法典', href: '#' },
-                { name: '消费者权益保护法', href: '#' },
-                { name: '汽车销售管理办法', href: '#' },
-                { name: '12315 投诉平台', href: '#' },
-              ].map((item) => (
-                <li key={item.name}>
-                  <a href={item.href} className="text-sm text-white/50 hover:text-white/80 transition-colors flex items-center gap-1">
-                    {item.name}
-                    <ExternalLink size={10} className="opacity-50" />
-                  </a>
-                </li>
-              ))}
+            <h4 className="text-lg font-bold mb-4 tracking-wider uppercase">联系我们</h4>
+            <ul className="space-y-3">
+              <li className="flex items-center gap-2 text-white/60">
+                <span className="text-xl">📧</span>
+                contact@rights-shield.com
+              </li>
+              <li className="flex items-center gap-2 text-white/60">
+                <span className="text-xl">📱</span>
+                400-123-4567
+              </li>
+              <li className="flex items-center gap-2 text-white/60">
+                <span className="text-xl">📍</span>
+                广州市海珠区中山大学
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-16 pt-6 border-t border-white/[0.04] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/25">
-            © 2025 权盾 RightsShield. 仅供学术研究与消费者教育使用，不构成法律意见。
+        {/* Divider */}
+        <div className="nb-divider bg-white my-12" />
+
+        {/* Bottom */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-white/40 text-sm uppercase">
+            © 2024 权盾 RightsShield. 保留所有权利.
           </p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">隐私政策</a>
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">使用条款</a>
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">免责声明</a>
-          </div>
+          <p className="text-white/40 text-sm uppercase">
+            中山大学法学院 · 车企数字预售模式消费者权益研究项目
+          </p>
         </div>
       </div>
     </footer>

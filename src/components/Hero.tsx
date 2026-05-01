@@ -1,82 +1,94 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Car, FileSearch } from 'lucide-react';
-import WaveParticlesBackground from './WaveParticlesBackground';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onOpenChat?: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden vignette">
-      <WaveParticlesBackground position="full" />
-      
-      {/* Grid background */}
-      <div className="absolute inset-0 grid-bg grid-bg-fade opacity-40" />
-
-      {/* 优化：移除巨大的模糊效果，使用更轻量的渐变 */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full" style={{ filter: 'blur(40px)' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/5 rounded-full" style={{ filter: 'blur(30px)' }} />
-
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        {/* Pill badge */}
-        <div className="inline-flex items-center gap-2 mb-8 opacity-0 animate-fade-in-up">
-          <span className="pill">
-            <Car size={12} />
-            车企数字预售消费者权益守护
-          </span>
-        </div>
-
-        {/* Main heading */}
-        <h1 className="font-display text-5xl md:text-7xl font-bold leading-tight mb-6 opacity-0 animate-fade-in-up delay-100">
-          <span className="text-white">AI 驱动的</span>
-          <br />
-          <span className="text-glow bg-gradient-to-r from-primary-300 via-accent to-blue-400 bg-clip-text text-transparent">
-            购车合同守护
-          </span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-in-up delay-200">
-          一键识别购车定金陷阱、分析预售合同条款是否侵权、获取专业维权建议。
-          <br className="hidden md:block" />
-          让 AI 为您的购车权益保驾护航。
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 opacity-0 animate-fade-in-up delay-300">
-          <a
-            href="#ai-chat"
-            className="group inline-flex items-center gap-2.5 px-8 py-4 bg-primary hover:bg-primary-600 text-white font-semibold btn-clip transition-all duration-300 glow-blue hover:glow-blue"
-          >
-            <span>免费咨询 AI</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </a>
-          <a
-            href="#features"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white/80 hover:text-white border border-white/[0.08] hover:border-white/[0.15] rounded-lg transition-all duration-300"
-          >
-            了解更多
-          </a>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto opacity-0 animate-fade-in-up delay-400">
-          {[
-            { icon: FileSearch, value: '500+', label: '购车合同已分析' },
-            { icon: Car, value: '95%', label: '识别准确率' },
-            { icon: ShieldCheck, value: '1,200+', label: '车主信赖' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <stat.icon size={20} className="text-accent mx-auto mb-2 opacity-60" />
-              <div className="font-mono text-xl font-bold text-white">{stat.value}</div>
-              <div className="text-xs text-white/40 mt-1">{stat.label}</div>
+    <section id="hero" className="min-h-screen flex items-center justify-center bg-white pt-20">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div>
+            {/* Badge */}
+            <div className="nb-badge nb-badge-pink mb-6">
+              中山大学研究项目
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-0 animate-fade-in-up delay-500">
-        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Scroll</span>
-        <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1">
-          <div className="w-1 h-2 bg-accent rounded-full animate-bounce" />
+            {/* Title */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-black mb-6 leading-none">
+              车企消费者
+              <br />
+              <span className="text-[#ff006e]">权益守护</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-lg md:text-xl text-black/80 mb-8 max-w-xl leading-relaxed">
+              基于AI技术的专业法律咨询平台，帮助您识别购车合同中的不公平条款，
+              守护您的合法权益
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#features"
+                className="nb-btn nb-btn-primary text-base px-8 py-4"
+              >
+                了解功能
+              </a>
+              <button
+                onClick={onOpenChat}
+                className="nb-btn nb-btn-outline text-base px-8 py-4"
+              >
+                免费咨询
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="mt-12 grid grid-cols-3 gap-6">
+              {[
+                { value: '500+', label: '成功案例' },
+                { value: '98%', label: '满意度' },
+                { value: '24h', label: '响应时间' },
+              ].map((stat) => (
+                <div key={stat.label} className="nb-card p-4 text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-[#ff006e]">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-black/60 mt-1 uppercase">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Visual */}
+          <div className="relative">
+            {/* Main Card */}
+            <div className="nb-card p-8 bg-[#ccff00]">
+              <div className="text-6xl mb-4">🚗</div>
+              <h3 className="text-2xl font-bold text-black mb-2 uppercase">
+                智能合同分析
+              </h3>
+              <p className="text-black/80">
+                AI驱动的合同条款识别，一键发现潜在风险
+              </p>
+              <div className="mt-6 flex gap-4">
+                <div className="nb-badge nb-badge-blue">合同审查</div>
+                <div className="nb-badge nb-badge-orange">风险预警</div>
+              </div>
+            </div>
+
+            {/* Floating Elements */}
+            <div className="absolute -top-4 -right-4 nb-card p-3 bg-[#00d9ff] nb-animate-bounce">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <div className="absolute -bottom-4 -left-4 nb-card p-3 bg-[#ff9500] nb-animate-shake">
+              <span className="text-2xl">🛡️</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
