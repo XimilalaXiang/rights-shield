@@ -4,7 +4,7 @@ import { Menu, X } from 'lucide-react';
 const navItems = [
   { name: '首页', href: '#hero' },
   { name: '功能', href: '#features' },
-  { name: 'AI 助手', href: '#ai-chat' },
+
   { name: '案例', href: '#cases' },
   { name: '关于', href: '#about' },
 ];
