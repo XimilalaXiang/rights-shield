@@ -7,7 +7,7 @@ import AIAssistant from './components/AIAssistant'
 
 function App() {
   return (
-    <div className="dark min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#F9F8F6] text-[#1C1C1C]">
       <Navbar />
       <main>
         <Hero />

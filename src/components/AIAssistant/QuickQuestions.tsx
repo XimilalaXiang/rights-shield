@@ -15,15 +15,15 @@ const quickQuestions = [
 
 const QuickQuestions: React.FC<QuickQuestionsProps> = ({ onSelect, disabled = false }) => {
   return (
-    <div className="grid grid-cols-1 gap-2">
+    <div className="space-y-2">
       {quickQuestions.map((question, index) => (
         <button
           key={index}
           onClick={() => onSelect(question.text)}
           disabled={disabled}
-          className="flex items-center gap-3 px-4 py-3 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl text-sm text-gray-600 hover:text-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="w-full flex items-center gap-3 px-4 py-3 border border-[#1C1C1C]/10 hover:border-[#1C1C1C] text-sm text-[#1C1C1C]/60 hover:text-[#1C1C1C] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed group"
         >
-          <question.icon size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" />
+          <question.icon size={14} className="text-[#1C1C1C]/30 group-hover:text-[#1C1C1C]/60 transition-colors flex-shrink-0" />
           <span className="text-left">{question.text}</span>
         </button>
       ))}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Shield, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 
 const navItems = [
   { name: '首页', href: '#hero' },
@@ -12,9 +12,6 @@ const navItems = [
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const indicatorRef = useRef<HTMLDivElement>(null);
-  const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,61 +21,27 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const activeEl = navRefs.current[activeIndex];
-    if (activeEl && indicatorRef.current) {
-      const rect = activeEl.getBoundingClientRect();
-      const navRect = activeEl.parentElement!.getBoundingClientRect();
-      indicatorRef.current.style.left = `${rect.left - navRect.left}px`;
-      indicatorRef.current.style.width = `${rect.width}px`;
-    }
-  }, [activeIndex]);
-
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-    setMobileOpen(false);
-  };
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 ${
         scrolled
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/[0.06]'
+          ? 'bg-[#F9F8F6]/90 backdrop-blur border-b border-[#1C1C1C]/10'
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
-        <a href="#hero" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-            <Shield size={16} className="text-accent" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-display text-sm font-semibold tracking-wide text-white">
-              权盾
-            </span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">
-              RightsShield
-            </span>
-          </div>
+        <a href="#hero" className="font-serif text-xl md:text-2xl tracking-tight text-[#1C1C1C]">
+          权盾
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1 relative">
-          <div
-            ref={indicatorRef}
-            className="absolute top-1/2 -translate-y-1/2 h-8 bg-white/[0.06] rounded-full transition-all duration-300 ease-out border border-white/[0.08]"
-            style={{ boxShadow: '0 0 15px rgba(59, 130, 246, 0.1)' }}
-          />
-          {navItems.map((item, i) => (
+        <div className="hidden md:flex items-center gap-8">
+          {navItems.map((item) => (
             <a
               key={item.name}
               href={item.href}
-              ref={(el: HTMLAnchorElement | null) => { navRefs.current[i] = el; }}
-              onClick={() => handleClick(i)}
-              className={`relative z-10 px-4 py-1.5 text-sm font-medium transition-colors duration-200 ${
-                activeIndex === i ? 'text-white' : 'text-white/50 hover:text-white/70'
-              }`}
+              className="hover-underline text-sm tracking-wide text-[#1C1C1C]/60 hover:text-[#1C1C1C] transition-colors duration-200"
             >
               {item.name}
             </a>
@@ -86,16 +49,16 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* CTA + Mobile Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <a
             href="#ai-chat"
-            className="hidden md:inline-flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-semibold btn-clip-sm transition-all duration-200 glow-blue-sm hover:glow-blue"
+            className="hidden md:inline-flex px-6 py-3 text-sm tracking-wide border border-[#1C1C1C] text-[#1C1C1C] hover:bg-[#1C1C1C] hover:text-[#F9F8F6] transition-colors duration-200"
           >
             开始咨询
           </a>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden w-10 h-10 flex items-center justify-center text-white/70 hover:text-white"
+            className="md:hidden w-10 h-10 flex items-center justify-center text-[#1C1C1C]"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -104,25 +67,21 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-white/[0.06]">
+        <div className="md:hidden bg-[#F9F8F6] border-b border-[#1C1C1C]/10">
           <div className="px-6 py-4 space-y-1">
-            {navItems.map((item, i) => (
+            {navItems.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                onClick={() => handleClick(i)}
-                className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  activeIndex === i
-                    ? 'text-white bg-white/[0.06]'
-                    : 'text-white/50 hover:text-white/70 hover:bg-white/[0.03]'
-                }`}
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-3 text-sm tracking-wide text-[#1C1C1C]/60 hover:text-[#1C1C1C] transition-colors"
               >
                 {item.name}
               </a>
             ))}
             <a
               href="#ai-chat"
-              className="block mt-3 px-4 py-3 bg-primary text-white text-sm font-semibold text-center btn-clip-sm"
+              className="block mt-4 px-6 py-3 text-sm tracking-wide border border-[#1C1C1C] text-[#1C1C1C] text-center"
             >
               开始咨询
             </a>
