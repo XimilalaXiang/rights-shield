@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
-const AIChat: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AIChatProps {
+  isOpen?: boolean;
+  onToggle?: () => void;
+  onClose?: () => void;
+}
+
+const AIChat: React.FC<AIChatProps> = ({ isOpen = false, onToggle, onClose }) => {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; text: string }>>([]);
   const [input, setInput] = useState('');
 
@@ -18,7 +23,6 @@ const AIChat: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', text: input }]);
     setInput('');
     
-    // Simulate AI response
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         role: 'ai', 
@@ -29,14 +33,14 @@ const AIChat: React.FC = () => {
 
   const handleQuickQuestion = (question: string) => {
     setInput(question);
-    handleSend();
+    setTimeout(() => handleSend(), 100);
   };
 
   return (
     <>
       {/* Floating Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={onToggle}
         className="fixed bottom-6 right-6 w-14 h-14 bg-[#d4553a] border-2 border-[#1a3055] shadow-[3px_3px_0px_#1a3055] flex items-center justify-center hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-50"
       >
         <svg className="w-6 h-6 text-[#f5f0e1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +58,7 @@ const AIChat: React.FC = () => {
               <p className="text-xs text-[#f5f0e1]/60">购车权益守护 · 实时解答</p>
             </div>
             <button 
-              onClick={() => setIsOpen(false)}
+              onClick={onClose}
               className="w-8 h-8 border-2 border-[#f5f0e1]/30 flex items-center justify-center hover:border-[#d4553a] hover:text-[#d4553a] transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

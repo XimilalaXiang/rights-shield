@@ -1,6 +1,10 @@
 import React from 'react';
 
-const Cases: React.FC = () => {
+interface CasesProps {
+  onOpenChat?: () => void;
+}
+
+const Cases: React.FC<CasesProps> = ({ onOpenChat }) => {
   const cases = [
     {
       title: '定金不可退纠纷',
@@ -92,12 +96,12 @@ const Cases: React.FC = () => {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <a
-            href="#contact"
+          <button
+            onClick={onOpenChat}
             className="ue-btn bg-[#d4553a] border-[#d4553a] text-[#f5f0e1] px-8 py-4"
           >
             咨询您的案例
-          </a>
+          </button>
         </div>
       </div>
     </section>

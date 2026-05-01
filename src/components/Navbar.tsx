@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  onOpenChat?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ onOpenChat }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -50,12 +54,12 @@ const Navbar: React.FC = () => {
                 {item.name}
               </a>
             ))}
-            <a
-              href="#contact"
+            <button
+              onClick={onOpenChat}
               className="ue-btn ue-btn-vermilion text-sm px-4 py-2"
             >
               免费咨询
-            </a>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -86,12 +90,15 @@ const Navbar: React.FC = () => {
                 {item.name}
               </a>
             ))}
-            <a
-              href="#contact"
-              className="block mt-4 ue-btn ue-btn-vermilion text-center text-sm"
+            <button
+              onClick={() => {
+                onOpenChat?.();
+                setMobileOpen(false);
+              }}
+              className="block mt-4 ue-btn ue-btn-vermilion text-center text-sm w-full"
             >
               免费咨询
-            </a>
+            </button>
           </div>
         )}
       </div>

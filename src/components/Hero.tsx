@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onOpenChat?: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -10,7 +14,6 @@ const Hero: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -18,14 +21,12 @@ const Hero: React.FC = () => {
     resize();
     window.addEventListener('resize', resize);
 
-    // Wave animation
     let animationId: number;
     let time = 0;
 
     const drawWave = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw multiple waves
       const waves = [
         { amplitude: 30, frequency: 0.02, speed: 0.03, color: 'rgba(26, 48, 85, 0.1)' },
         { amplitude: 20, frequency: 0.03, speed: 0.04, color: 'rgba(212, 85, 58, 0.08)' },
@@ -64,7 +65,6 @@ const Hero: React.FC = () => {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden ue-washi">
-      {/* Wave Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
@@ -106,12 +106,12 @@ const Hero: React.FC = () => {
           >
             了解功能
           </a>
-          <a
-            href="#contact"
+          <button
+            onClick={onOpenChat}
             className="ue-btn ue-btn-outline text-base px-8 py-4"
           >
             免费咨询
-          </a>
+          </button>
         </div>
 
         {/* Stats */}

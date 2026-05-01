@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Features from './components/Features'
@@ -7,16 +8,18 @@ import AIChat from './components/AIChat'
 import './ukiyo-e-digital.css'
 
 function App() {
+  const [chatOpen, setChatOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-[#f5f0e1] text-[#1a3055]">
-      <Navbar />
+      <Navbar onOpenChat={() => setChatOpen(true)} />
       <main>
-        <Hero />
+        <Hero onOpenChat={() => setChatOpen(true)} />
         <Features />
-        <Cases />
+        <Cases onOpenChat={() => setChatOpen(true)} />
       </main>
       <Footer />
-      <AIChat />
+      <AIChat isOpen={chatOpen} onToggle={() => setChatOpen(!chatOpen)} onClose={() => setChatOpen(false)} />
     </div>
   )
 }
