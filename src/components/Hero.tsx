@@ -10,9 +10,9 @@ const Hero: React.FC = () => {
       {/* Grid background */}
       <div className="absolute inset-0 grid-bg grid-bg-fade opacity-40" />
 
-      {/* Glow orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px] animate-pulse-glow delay-300" />
+      {/* 优化：移除巨大的模糊效果，使用更轻量的渐变 */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full" style={{ filter: 'blur(40px)' }} />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/5 rounded-full" style={{ filter: 'blur(30px)' }} />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         {/* Pill badge */}

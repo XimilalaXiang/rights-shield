@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, RefreshCw, AlertCircle, Shield, CircleStop, Plus, History, Minimize2 } from 'lucide-react';
-import MessageBubble from './MessageBubble';
+import { Send, X, Minimize2, Shield } from 'lucide-react';
 import QuickQuestions from './QuickQuestions';
 
 interface Message {
@@ -14,21 +13,17 @@ interface ChatWindowProps {
   onClose: () => void;
 }
 
-// 聊天对话框 - 深色科技风格
 const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // 自动滚动到底部
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // ESC 关闭
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -37,7 +32,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-  // 发送
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
     
@@ -51,9 +45,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-    setError(null);
 
-    // 模拟AI响应
     setTimeout(() => {
       const responses: Record<string, string> = {
         '定金不可退是否合法？': '根据《民法典》第五百八十七条，定金罚则规定：\n\n**给付定金的一方不履行债务的，无权请求返还定金**\n\n但以下情况可主张退还：\n1. 商家存在违约行为\n2. 定金超过合同标的额20%的部分\n3. 合同存在重大误解或显失公平\n4. 商家未尽到充分告知义务\n\n⚠️ **关键提示**：如果商家在缔约时未以显著方式提示"定金不可退"，可能构成缔约过失，消费者可主张赔偿信赖利益损失。',
@@ -74,7 +66,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     }, 1500);
   };
 
-  // 输入框快捷键
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -87,163 +78,150 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
     inputRef.current?.focus();
   };
 
-  // 导出为 Markdown
-  const buildMarkdown = () => {
-    const header = `# 权盾 RightsShield 对话记录\n\n`;
-    const body = messages.map((m) => `## ${m.role === 'user' ? '用户' : '助手'}\n\n${m.content || ''}\n`).join('\n');
-    return header + body;
-  };
-  
-  const exportMarkdown = () => {
-    const md = buildMarkdown();
-    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const ts = new Date().toISOString().replace(/[:.]/g, '-');
-    a.href = url;
-    a.download = `rights-shield-chat-${ts}.md`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
-
   return (
-    <div
-      className="fixed bottom-0 right-0 md:bottom-6 md:right-6 z-50 flex flex-col w-full h-full md:w-[460px] lg:w-[520px] md:h-[600px] md:rounded-2xl bg-[#0a0a0a] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] border border-white/[0.08] overflow-hidden"
-      role="dialog"
-      aria-modal="true"
-      aria-label="AI购车法律助手"
-    >
+    <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 z-50 flex flex-col w-full h-full md:w-[420px] lg:w-[480px] md:h-[600px] md:rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
       {/* 顶部栏 */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#0f0f0f] to-[#141414] border-b border-white/[0.08]">
+      <div className="flex items-center justify-between px-5 py-4 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          {/* Logo 图标 */}
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-[0_4px_15px_rgba(59,130,246,0.3)]">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
             <Shield className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">AI 购车法律助手</h3>
-            <p className="text-xs text-white/40">随时守护您的购车权益</p>
+            <h3 className="text-base font-semibold text-gray-900">法律咨询助手</h3>
+            <p className="text-xs text-gray-500">购车权益守护 · 实时解答</p>
           </div>
         </div>
 
-        {/* 控制按钮组 */}
         <div className="flex items-center gap-2">
-          {/* 新会话 */}
           <button
-            onClick={() => { setMessages([]); setInput(''); setError(null); }}
-            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all duration-200 flex items-center justify-center group"
+            onClick={() => { setMessages([]); setInput(''); }}
+            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center text-gray-500 hover:text-gray-700"
             title="新会话"
-            aria-label="新会话"
           >
-            <Plus className="h-4 w-4 text-white/60 group-hover:text-accent" />
+            <Minimize2 className="h-4 w-4" />
           </button>
-
-          {/* 最小化 */}
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all duration-200 flex items-center justify-center group"
-            title="最小化"
-            aria-label="最小化"
+            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center text-gray-500 hover:text-gray-700"
+            title="关闭"
           >
-            <Minimize2 className="h-4 w-4 text-white/60 group-hover:text-accent" />
+            <X className="h-4 w-4" />
           </button>
-
-          {isLoading && (
-            <button
-              onClick={() => setIsLoading(false)}
-              className="w-9 h-9 rounded-lg bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-all duration-200 flex items-center justify-center"
-              title="停止生成"
-              aria-label="停止生成"
-            >
-              <CircleStop className="h-4 w-4 text-red-400" />
-            </button>
-          )}
         </div>
       </div>
 
       {/* 消息区 */}
-      <div className="flex-1 overflow-y-auto p-4 bg-[#050505]" aria-live="polite">
+      <div className="flex-1 overflow-y-auto p-5 bg-white">
         {messages.length === 0 ? (
-          // 欢迎界面
-          <div className="h-full flex flex-col items-center justify-center text-center px-6">
-            {/* 主图标 */}
-            <div className="relative mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-[0_8px_30px_rgba(59,130,246,0.3)]">
-                <span className="text-4xl">🛡️</span>
-              </div>
-              {/* 状态指示灯 */}
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[#050505] flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          <div className="h-full flex flex-col">
+            {/* 欢迎消息 */}
+            <div className="mb-6">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="bg-gray-50 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    您好！我是购车权益法律助手 🛡️<br /><br />
+                    我可以帮您：<br />
+                    • 分析购车合同条款<br />
+                    • 识别定金陷阱<br />
+                    • 提供维权建议<br /><br />
+                    请描述您的问题，或点击下方快捷提问。
+                  </p>
+                </div>
               </div>
             </div>
-            
-            <h3 className="text-lg font-semibold text-white mb-2">你好，我是 AI 购车法律助手</h3>
-            <p className="text-sm text-white/50 mb-6 leading-relaxed max-w-xs">
-              我可以帮您分析购车合同、识别定金陷阱、提供维权建议。
-              遇到任何购车权益问题，随时问我。
-            </p>
-            
-            {/* 快速提问 */}
-            <QuickQuestions onSelect={handleQuickQuestion} disabled={isLoading} />
+
+            {/* 快捷提问 */}
+            <div className="mt-auto">
+              <p className="text-xs text-gray-400 mb-3 font-medium">快捷提问</p>
+              <QuickQuestions onSelect={handleQuickQuestion} disabled={isLoading} />
+            </div>
           </div>
         ) : (
-          // 消息列表
           <>
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} onExportMarkdown={exportMarkdown} />
+              <div key={message.id} className={`flex gap-3 mb-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                {message.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Shield className="h-4 w-4 text-blue-600" />
+                  </div>
+                )}
+                <div className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
+                  message.role === 'user'
+                    ? 'bg-blue-500 text-white rounded-tr-none'
+                    : 'bg-gray-50 text-gray-700 rounded-tl-none'
+                }`}>
+                  <div className="whitespace-pre-wrap">
+                    {message.content.split('\n').map((line, j) => {
+                      if (line.startsWith('**') && line.endsWith('**')) {
+                        return <p key={j} className="font-semibold mt-2 first:mt-0">{line.replace(/\*\*/g, '')}</p>;
+                      }
+                      if (line.startsWith('•') || /^\d+\./.test(line)) {
+                        return <p key={j} className="ml-2">{line}</p>;
+                      }
+                      if (line.startsWith('⚠️') || line.startsWith('💡')) {
+                        return <p key={j} className="mt-2 text-amber-600">{line}</p>;
+                      }
+                      return <p key={j}>{line}</p>;
+                    })}
+                  </div>
+                  <p className="text-[10px] mt-2 opacity-60">
+                    {message.timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
             ))}
 
-            {/* 错误提示 */}
-            {error && (
-              <div className="flex items-start gap-3 p-4 bg-red-500/10 rounded-xl border border-red-500/30">
-                <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-red-300 mb-2">{error}</p>
-                  <button onClick={() => setError(null)} className="inline-flex items-center gap-1 text-xs text-red-400 hover:text-red-300 font-medium">
-                    <RefreshCw className="h-3 w-3" />
-                    重试
-                  </button>
+            {isLoading && (
+              <div className="flex gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="bg-gray-50 rounded-xl rounded-tl-none px-4 py-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+                  </div>
                 </div>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </>
         )}
       </div>
 
       {/* 输入区 */}
-      <div className="p-4 bg-[#0a0a0a] border-t border-white/[0.08]">
-        <div className="flex gap-3">
+      <div className="p-4 bg-gray-50 border-t border-gray-200">
+        <div className="flex gap-2">
           <textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={isLoading ? 'AI 正在思考...' : '请输入您的购车合同问题...'}
+            placeholder={isLoading ? 'AI 正在思考...' : '请输入您的问题或需求...'}
             disabled={isLoading}
             rows={1}
-            className="flex-1 px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 resize-none text-sm text-white placeholder-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            style={{ minHeight: '44px', maxHeight: '120px' }}
+            className="flex-1 px-4 py-2.5 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm text-gray-700 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            style={{ minHeight: '40px', maxHeight: '100px' }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = 'auto';
               target.style.height = target.scrollHeight + 'px';
             }}
           />
-
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-primary to-blue-600 rounded-xl text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] transition-all duration-200 hover:shadow-[0_6px_20px_rgba(59,130,246,0.4)] hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none flex items-center justify-center"
+            className="flex-shrink-0 px-4 py-2.5 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-lg transition-colors disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
           >
-            <Send className="h-5 w-5" />
+            <Send className="h-4 w-4" />
+            发送
           </button>
         </div>
-
-        <p className="hidden md:block text-xs text-white/30 mt-2 text-center">按 Enter 发送，Shift + Enter 换行</p>
+        <p className="text-[11px] text-gray-400 mt-2 text-center">仅提供参考，不构成法律建议</p>
       </div>
     </div>
   );
