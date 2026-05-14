@@ -1,119 +1,119 @@
-import React, { useRef } from 'react';
+import { motion } from 'framer-motion'
 import { 
-  Car, FileSearch, ShieldAlert, BookOpen, MessageSquare, Zap,
-  type LucideIcon 
-} from 'lucide-react';
+  Shield, FileSearch, AlertTriangle, Scale, 
+  MessageSquare, BookOpen 
+} from 'lucide-react'
 
-interface FeatureCardProps {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  span?: string;
-  gradient?: string;
+interface BentoCardProps {
+  icon: React.ReactNode
+  title: string
+  value: string
+  subtitle?: string
+  delay: number
+  span?: string
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ 
-  icon: Icon, title, description, span = '', gradient = '' 
-}) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-  };
-
+function BentoCard({ icon, title, value, subtitle, delay, span = '' }: BentoCardProps) {
   return (
-    <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      className={`feature-card glass-card glass-card-hover rounded-2xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 ${span} group`}
+    <motion.div
+      className={`bento-card grid-pattern p-6 md:p-8 flex flex-col justify-center ${span}`}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="relative z-10">
-        <div className={`w-12 h-12 rounded-xl ${gradient || 'bg-primary/10'} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-          <Icon size={22} className="text-accent" />
-        </div>
-        <h3 className="font-display text-lg font-semibold text-white mb-3">{title}</h3>
-        <p className="text-sm text-white/50 leading-relaxed">{description}</p>
+        <div className="text-neutral-500 mb-3">{icon}</div>
+        <h3 className="text-sm md:text-base text-neutral-300 mb-2">{title}</h3>
+        <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3">{value}</p>
+        {subtitle && (
+          <p className="text-sm text-neutral-500 leading-relaxed">{subtitle}</p>
+        )}
       </div>
-      {/* Bottom accent line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    </div>
-  );
-};
+    </motion.div>
+  )
+}
 
-const features: FeatureCardProps[] = [
-  {
-    icon: Car,
-    title: '购车合同智能扫描',
-    description: '上传购车合同、订单确认书、定金收据，AI 自动识别定金陷阱、不合理条款、霸王条款等潜在侵权内容。',
-    span: 'md:col-span-2 md:row-span-2',
-    gradient: 'bg-blue-500/10',
-  },
-  {
-    icon: FileSearch,
-    title: '预售条款合规分析',
-    description: '基于《民法典》《消费者权益保护法》《汽车销售管理办法》，逐条分析购车预售合同条款的合法性。',
-    gradient: 'bg-indigo-500/10',
-  },
-  {
-    icon: ShieldAlert,
-    title: '定金/订金风险预警',
-    description: '对定金条款、退换货规则、交付时间、配置变更等高风险领域进行专项检测与风险等级评估。',
-    gradient: 'bg-cyan-500/10',
-  },
-  {
-    icon: MessageSquare,
-    title: 'AI 购车法律顾问',
-    description: '对话式 AI 助手，随时解答购车纠纷问题，提供维权路径建议和法律依据引用。',
-    span: 'md:col-span-2',
-    gradient: 'bg-violet-500/10',
-  },
-  {
-    icon: BookOpen,
-    title: '购车维权知识库',
-    description: '涵盖常见购车合同类型、典型案例解读、维权流程指南等实用法律知识。',
-    gradient: 'bg-emerald-500/10',
-  },
-  {
-    icon: Zap,
-    title: '即时响应',
-    description: '毫秒级分析速度，无需等待。支持批量合同扫描，高效省时。',
-    gradient: 'bg-amber-500/10',
-  },
-];
+export default function Features() {
+  const features = [
+    {
+      icon: <FileSearch className="w-6 h-6" />,
+      title: '合同条款扫描',
+      value: '智能识别',
+      subtitle: '自动检测购车合同中的霸王条款、不合理免责、定金陷阱等侵权内容',
+      span: 'md:col-span-2',
+    },
+    {
+      icon: <AlertTriangle className="w-6 h-6" />,
+      title: '风险等级评估',
+      value: '四级预警',
+      subtitle: '从低风险到严重侵权，精准评估每条条款的风险等级',
+      span: '',
+    },
+    {
+      icon: <Shield className="w-6 h-6" />,
+      title: '法律依据匹配',
+      value: '精准引用',
+      subtitle: '自动匹配消费者权益保护法、民法典等相关法条',
+      span: '',
+    },
+    {
+      icon: <Scale className="w-6 h-6" />,
+      title: '维权方案生成',
+      value: '定制方案',
+      subtitle: '根据具体侵权情况，生成个性化维权建议和投诉模板',
+      span: 'md:col-span-2',
+    },
+    {
+      icon: <MessageSquare className="w-6 h-6" />,
+      title: 'AI 法律咨询',
+      value: '7×24',
+      subtitle: '随时在线咨询汽车消费相关法律问题，专业解答',
+      span: 'md:col-span-1',
+    },
+    {
+      icon: <BookOpen className="w-6 h-6" />,
+      title: '案例知识库',
+      value: '持续更新',
+      subtitle: '收录大量汽车消费纠纷案例，提供参考借鉴',
+      span: 'md:col-span-2',
+    },
+  ]
 
-const Features: React.FC = () => {
   return (
-    <section id="features" className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 grid-bg grid-bg-fade opacity-30" />
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+    <section id="features" className="py-20 px-4 bg-black">
+      <div className="container mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16">
-          <span className="pill mb-4 inline-flex">核心功能</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-white mt-4 mb-4">
-            全方位守护您的购车权益
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            核心能力
           </h2>
-          <p className="text-white/50 max-w-xl mx-auto">
-            从购车合同扫描到维权建议，AI 全程陪伴，让每一份购车合同都透明可信赖
+          <p className="text-lg text-neutral-400 max-w-2xl mx-auto">
+            全方位守护您的汽车消费权益
           </p>
-        </div>
+        </motion.div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {features.map((feature, i) => (
-            <FeatureCard key={i} {...feature} />
+            <BentoCard
+              key={i}
+              icon={feature.icon}
+              title={feature.title}
+              value={feature.value}
+              subtitle={feature.subtitle}
+              delay={i * 0.1}
+              span={feature.span}
+            />
           ))}
         </div>
       </div>
     </section>
-  );
-};
-
-export default Features;
+  )
+}
