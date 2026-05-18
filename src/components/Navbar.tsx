@@ -8,6 +8,7 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
+  { label: '首页', href: '#top' },
   { label: '功能', href: '#features' },
   { label: '案例', href: '#cases' },
   { label: '关于', href: '#about' },
@@ -28,9 +29,9 @@ export default function Navbar() {
 
       if (location.pathname !== '/') return
       const scrollPos = window.scrollY + 150
-      let currentActive: number | null = null
+      let currentActive: number = 0
 
-      for (let i = navLinks.length - 1; i >= 0; i--) {
+      for (let i = navLinks.length - 1; i >= 1; i--) {
         const id = navLinks[i].href.replace('#', '')
         const section = document.getElementById(id)
         if (section && scrollPos >= section.offsetTop) {

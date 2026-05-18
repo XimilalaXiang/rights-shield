@@ -4,7 +4,7 @@ import { ParticleTextEffect } from './ParticleTextEffect'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-between overflow-hidden">
+    <section id="top" className="relative min-h-screen flex flex-col justify-between overflow-hidden">
       <div className="absolute inset-0 z-0">
         <ParticleTextEffect
           words={['权盾', 'RIGHTS SHIELD', '消费维权', '法律助手']}
