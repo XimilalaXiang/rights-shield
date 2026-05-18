@@ -10,6 +10,7 @@ import './saas-dark.css'
 const ChatPage = lazy(() => import('./pages/ChatPage'))
 const CaseLibrary = lazy(() => import('./pages/CaseLibrary'))
 const RightsGuide = lazy(() => import('./pages/RightsGuide'))
+const Quiz = lazy(() => import('./pages/Quiz'))
 
 function HomePage() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/cases" element={<CaseLibrary />} />
         <Route path="/guide" element={<RightsGuide />} />
+        <Route path="/quiz" element={<Quiz />} />
       </Routes>
     </Suspense>
   )
