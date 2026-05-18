@@ -12,20 +12,11 @@ const STORAGE_KEY = 'rights_shield_chat'
 const API_URL = '/api/chat'
 const MODEL = 'deepseek-ai/DeepSeek-V3.2'
 
-const SYSTEM_PROMPT = `你是"权盾 AI 法律助手"，专注于中国汽车消费者权益保护领域。
+const SYSTEM_PROMPT = `你是"权盾 AI 法律助手"，专注中国汽车消费者权益保护。直接回答用户问题，不要输出思考过程、分析步骤或格式说明。
 
-你的职责：
-1. 分析购车合同条款，识别霸王条款和侵权内容
-2. 引用相关法律法规（消费者权益保护法、民法典、合同法等）
-3. 提供维权建议和投诉路径
-4. 评估条款风险等级
+职责：分析购车合同条款、引用相关法律法规、提供维权建议和投诉路径、评估风险等级。
 
-回答要求：
-- 简洁专业，通俗易懂
-- 引用具体法条时标注条款编号
-- 给出可操作的建议
-- 如果问题超出汽车消费领域，礼貌引导回主题
-- 用中文回答`
+回答风格：简洁专业，引用法条标注条款编号，给出可操作建议，用中文回答。超出汽车消费领域的问题礼貌引导回主题。`
 
 function loadMessages(): Message[] {
   try {
@@ -78,8 +69,9 @@ export function useAIChat() {
       if (!reader) throw new Error('无法获取响应流')
 
       const decoder = new TextDecoder()
-      let accumulated = ''
+      let rawContent = ''
       let reasoningAccumulated = ''
+      let inThinkTag = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -92,25 +84,43 @@ export function useAIChat() {
           try {
             const parsed = JSON.parse(data)
             const delta = parsed.choices?.[0]?.delta
-            const contentDelta = delta?.content
-            const reasoningDelta = delta?.reasoning_content
+            const contentDelta = delta?.content || ''
+            const reasoningDelta = delta?.reasoning_content || ''
             let changed = false
 
             if (reasoningDelta) {
               reasoningAccumulated += reasoningDelta
               changed = true
             }
+
             if (contentDelta) {
-              accumulated += contentDelta
+              rawContent += contentDelta
               changed = true
             }
 
             if (changed) {
-              const currentContent = accumulated
-              const currentReasoning = reasoningAccumulated
+              let displayContent = rawContent
+              let displayReasoning = reasoningAccumulated
+
+              const thinkOpen = rawContent.indexOf('<think>')
+              if (thinkOpen !== -1) {
+                inThinkTag = true
+                const thinkClose = rawContent.indexOf('</think>')
+                if (thinkClose !== -1) {
+                  displayReasoning = rawContent.slice(thinkOpen + 7, thinkClose).trim()
+                  displayContent = (rawContent.slice(0, thinkOpen) + rawContent.slice(thinkClose + 8)).trim()
+                  inThinkTag = false
+                } else {
+                  displayReasoning = rawContent.slice(thinkOpen + 7).trim()
+                  displayContent = rawContent.slice(0, thinkOpen).trim()
+                }
+              }
+
+              const finalContent = displayContent
+              const finalReasoning = displayReasoning
               setMessages(prev => {
                 const next = prev.map(m => m.id === assistantMsg.id
-                  ? { ...m, content: currentContent, reasoning: currentReasoning || undefined }
+                  ? { ...m, content: finalContent, reasoning: finalReasoning || undefined }
                   : m
                 )
                 saveMessages(next)
@@ -120,6 +130,7 @@ export function useAIChat() {
           } catch {}
         }
       }
+      void inThinkTag;
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         setIsLoading(false)
