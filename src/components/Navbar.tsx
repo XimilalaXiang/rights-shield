@@ -47,7 +47,7 @@ export default function Navbar() {
               to="/chat"
               className="px-5 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-neutral-200 transition-colors"
             >
-              免费咨询
+              AI 咨询
             </Link>
           </div>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
               className="mt-3 block w-full px-5 py-2.5 bg-white text-black text-sm font-semibold rounded-lg text-center"
               onClick={() => setMobileOpen(false)}
             >
-              免费咨询
+              AI 咨询
             </Link>
           </div>
         )}

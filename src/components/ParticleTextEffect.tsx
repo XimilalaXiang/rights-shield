@@ -295,17 +295,34 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
       }
     }
 
-    // Pointer interaction
+    // Pointer ripple interaction (hover effect)
+    const px = pointerRef.current.x
+    const py = pointerRef.current.y
+    const rippleRadius = 80
+    if (px > 0 && py > 0) {
+      for (const particle of particles) {
+        if (particle.isKilled) continue
+        const dx = particle.pos.x - px
+        const dy = particle.pos.y - py
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < rippleRadius && dist > 0) {
+          const force = (1 - dist / rippleRadius) * 3
+          particle.vel.x += (dx / dist) * force
+          particle.vel.y += (dy / dist) * force
+        }
+      }
+    }
+
+    // Click to kill particles
     if (pointerRef.current.active) {
-      particles.forEach((particle) => {
-        const distance = Math.sqrt(
-          Math.pow(particle.pos.x - pointerRef.current.x, 2) +
-          Math.pow(particle.pos.y - pointerRef.current.y, 2)
-        )
-        if (distance < 30) {
+      for (const particle of particles) {
+        const dx = particle.pos.x - px
+        const dy = particle.pos.y - py
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 40) {
           particle.kill(displayWidth, displayHeight)
         }
-      })
+      }
     }
 
     frameCountRef.current++
