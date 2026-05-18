@@ -66,7 +66,7 @@ class Particle {
     this.acc.y = 0
   }
 
-  draw(ctx: CanvasRenderingContext2D, dpr: number) {
+  draw(ctx: CanvasRenderingContext2D, _dpr: number) {
     if (this.colorWeight < 1.0) {
       this.colorWeight = Math.min(this.colorWeight + this.colorBlendRate, 1.0)
     }
@@ -77,8 +77,7 @@ class Particle {
       b: Math.round(this.startColor.b + (this.targetColor.b - this.startColor.b) * this.colorWeight),
     }
 
-    // 粒子尺寸乘以 dpr，确保高 DPI 设备上可见
-    const size = this.particleSize * dpr
+    const size = this.particleSize
     ctx.fillStyle = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`
     ctx.fillRect(this.pos.x, this.pos.y, size, size)
   }
@@ -120,13 +119,11 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   const pointerRef = useRef({ x: -1000, y: -1000, active: false })
   const dprRef = useRef(1)
 
-  // 根据屏幕大小动态调整采样间隔
-  const getPixelSteps = (width: number, height: number) => {
-    const totalPixels = width * height
-    // 移动端用更大的采样间隔，减少粒子数量
-    if (totalPixels > 2000000) return 12  // 2K+ 屏幕
-    if (totalPixels > 1000000) return 8   // 1080p
-    return 6  // 小屏幕
+  const getPixelSteps = (width: number, height: number, _dpr: number) => {
+    const area = width * height
+    if (area < 400000) return 2    // 手机
+    if (area < 800000) return 3    // 平板
+    return 4                       // 桌面端
   }
 
   const generateRandomPos = (
@@ -154,20 +151,27 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const displayWidth = canvas.width / dpr
     const displayHeight = canvas.height / dpr
 
-    const scaledFontSize = Math.min(
-      100 * (displayWidth / 1200),
-      100 * (displayHeight / 300),
-      200
+    const scaledFontSize = Math.max(
+      72,
+      Math.min(
+        140 * (displayWidth / 1200),
+        140 * (displayHeight / 400),
+        220
+      )
     )
 
     offscreenCtx.fillStyle = 'white'
-    offscreenCtx.font = `bold ${scaledFontSize}px Inter, Arial, sans-serif`
+    offscreenCtx.font = `900 ${scaledFontSize}px Inter, Arial, sans-serif`
     offscreenCtx.textAlign = 'center'
     offscreenCtx.textBaseline = 'middle'
 
     const textY = displayHeight * 0.35
     const wordsArr = word.split(' ')
-    if (wordsArr.length <= 2) {
+
+    const textWidth = offscreenCtx.measureText(word).width
+    const shouldWrap = wordsArr.length > 1 && textWidth > displayWidth * 0.85
+
+    if (!shouldWrap) {
       offscreenCtx.fillText(word, displayWidth / 2, textY)
     } else {
       const lineHeight = scaledFontSize * 1.2
@@ -184,10 +188,16 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const particles = particlesRef.current
     let particleIndex = 0
 
-    const pixelSteps = getPixelSteps(displayWidth, displayHeight)
+    const pixelSteps = getPixelSteps(displayWidth, displayHeight, dpr)
+    const stepInPixels = pixelSteps * dpr
+    const canvasW = canvas.width
+
     const coordsIndexes: number[] = []
-    for (let i = 0; i < pixels.length; i += pixelSteps * 4) {
-      coordsIndexes.push(i)
+    for (let row = 0; row < canvas.height; row += stepInPixels) {
+      for (let col = 0; col < canvasW; col += stepInPixels) {
+        const i = (row * canvasW + col) * 4
+        if (i < pixels.length) coordsIndexes.push(i)
+      }
     }
 
     // Shuffle for fluid motion
@@ -201,14 +211,15 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const viewportH = window.innerHeight
     const spawnRadius = Math.sqrt(viewportW * viewportW + viewportH * viewportH) / 2
 
+    const baseSize = displayWidth < 500 ? 1.2 : 1.5
+
     for (const coordIndex of coordsIndexes) {
       const pixelIndex = coordIndex
       const alpha = pixels[pixelIndex + 3]
 
       if (alpha > 0) {
-        // 像素坐标需要除以 dpr 得到显示坐标
-        const x = ((pixelIndex / 4) % canvas.width) / dpr
-        const y = Math.floor(pixelIndex / 4 / canvas.width) / dpr
+        const x = ((pixelIndex / 4) % canvasW) / dpr
+        const y = Math.floor(pixelIndex / 4 / canvasW) / dpr
 
         let particle: Particle
 
@@ -229,8 +240,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
 
           particle.maxSpeed = Math.random() * 6 + 4
           particle.maxForce = particle.maxSpeed * 0.05
-          // 粒子基础尺寸，draw 时会乘以 dpr
-          particle.particleSize = Math.random() * 3 + 2
+          particle.particleSize = Math.random() * 0.8 + baseSize
           particle.colorBlendRate = Math.random() * 0.0275 + 0.0025
 
           particles.push(particle)
@@ -262,12 +272,11 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const dpr = dprRef.current
     const particles = particlesRef.current
 
-    // Motion blur background
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
     const displayWidth = canvas.width / dpr
     const displayHeight = canvas.height / dpr
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+    ctx.fillRect(0, 0, displayWidth, displayHeight)
 
     for (let i = particles.length - 1; i >= 0; i--) {
       const particle = particles[i]

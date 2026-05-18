@@ -8,16 +8,15 @@ interface HeroProps {
 export default function Hero({ onOpenChat }: HeroProps) {
   return (
     <section className="relative min-h-screen flex flex-col justify-between overflow-hidden">
-      {/* Particle text hero */}
-      <div className="flex-1 flex items-start justify-center pt-24 px-4">
+      {/* Full-screen particle canvas */}
+      <div className="absolute inset-0 z-0">
         <ParticleTextEffect
-          texts={['权盾', 'RIGHTS SHIELD', '消费维权', '法律助手']}
-          className="w-full max-w-4xl h-[300px] md:h-[400px]"
+          words={['权盾', 'RIGHTS SHIELD', '消费维权', '法律助手']}
         />
       </div>
 
       {/* Bottom content */}
-      <div className="container mx-auto text-center relative z-10 pb-12 px-4">
+      <div className="container mx-auto text-center relative z-10 pb-12 pt-[55vh] px-4">
         <div className="max-w-3xl mx-auto">
           <p className="text-lg md:text-xl text-neutral-400 mb-8 leading-relaxed">
             专业分析汽车购车合同中的<span className="text-white font-medium">霸王条款</span>与
