@@ -17,22 +17,41 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const location = useLocation()
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+
+      if (location.pathname !== '/') return
+      const scrollPos = window.scrollY + 150
+      let currentActive: number | null = null
+
+      for (let i = navLinks.length - 1; i >= 0; i--) {
+        const id = navLinks[i].href.replace('#', '')
+        const section = document.getElementById(id)
+        if (section && scrollPos >= section.offsetTop) {
+          currentActive = i
+          break
+        }
+      }
+      setActiveIndex(currentActive)
+    }
     window.addEventListener('scroll', handleScroll)
+    handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [location.pathname])
 
   const updateIndicator = useCallback((index: number | null) => {
-    if (index === null || !linkRefs.current[index]) {
+    const targetIndex = index ?? activeIndex
+    if (targetIndex === null || !linkRefs.current[targetIndex]) {
       setIndicatorStyle(prev => ({ ...prev, opacity: 0 }))
       return
     }
-    const el = linkRefs.current[index]
+    const el = linkRefs.current[targetIndex]
     if (el) {
       setIndicatorStyle({
         left: el.offsetLeft,
@@ -40,11 +59,11 @@ export default function Navbar() {
         opacity: 1,
       })
     }
-  }, [])
+  }, [activeIndex])
 
   useEffect(() => {
     updateIndicator(hoveredIndex)
-  }, [hoveredIndex, updateIndicator])
+  }, [hoveredIndex, activeIndex, updateIndicator])
 
   useEffect(() => {
     const handleResize = () => updateIndicator(hoveredIndex)
@@ -99,9 +118,16 @@ export default function Navbar() {
                     href={link.href}
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
-                    className="relative z-10 px-5 py-2 text-sm font-medium rounded-full text-white/60 hover:text-white transition-colors duration-300"
+                    className={`relative z-10 px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 ${
+                      activeIndex === index ? 'text-white' : 'text-white/60 hover:text-white'
+                    }`}
                   >
-                    {link.label}
+                    <span className="relative">
+                      {link.label}
+                      {activeIndex === index && (
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_6px_white]" />
+                      )}
+                    </span>
                   </a>
                 ))}
               </div>
@@ -144,7 +170,11 @@ export default function Navbar() {
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-lg text-white/60 hover:text-white hover:bg-white/5 py-4 px-4 rounded-xl transition-all duration-300"
+                className={`text-lg py-4 px-4 rounded-xl transition-all duration-300 ${
+                  activeIndex === index
+                    ? 'text-white bg-white/10 border border-white/10'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
                 style={{ transitionDelay: mobileOpen ? `${index * 50}ms` : '0ms' }}
               >
                 {link.label}
