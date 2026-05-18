@@ -165,7 +165,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     offscreenCtx.textAlign = 'center'
     offscreenCtx.textBaseline = 'middle'
 
-    const textY = displayHeight * 0.35
+    const textY = displayHeight * 0.25
     const wordsArr = word.split(' ')
 
     const textWidth = offscreenCtx.measureText(word).width
