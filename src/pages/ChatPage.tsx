@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, MessageSquare, Send, CircleStop, RefreshCw,
   Copy, Check, AlertCircle, Download, PanelLeftClose, PanelLeftOpen,
-  ArrowLeft, Pencil, X
+  ArrowLeft, Pencil, X, Paperclip, FileText
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -227,18 +227,47 @@ export default function ChatPage() {
 
   const [input, setInput] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [activeConversation?.messages])
 
   const handleSend = () => {
-    if (!input.trim() || isLoading) return
-    sendMessage(input)
+    if ((!input.trim() && !attachedFile) || isLoading) return
+    let messageContent = input.trim()
+    if (attachedFile) {
+      const filePrefix = `[附件: ${attachedFile.name}]\n\`\`\`\n${attachedFile.content}\n\`\`\`\n\n`
+      messageContent = filePrefix + (messageContent || '请分析这份文件内容')
+    }
+    sendMessage(messageContent)
     setInput('')
+    setAttachedFile(null)
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const validTypes = ['text/plain', 'text/markdown', 'text/csv', '']
+    const validExtensions = ['.txt', '.md', '.csv', '.text']
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!validTypes.includes(file.type) && !validExtensions.includes(ext)) {
+      return
+    }
+    if (file.size > 100 * 1024) {
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const content = ev.target?.result as string
+      setAttachedFile({ name: file.name, content })
+    }
+    reader.readAsText(file)
+    e.target.value = ''
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -405,13 +434,38 @@ export default function ChatPage() {
         {/* Input area */}
         <div className="border-t border-neutral-800 bg-black/80 backdrop-blur-sm px-4 py-4">
           <div className="max-w-3xl mx-auto">
-            <div className="flex gap-3 items-end bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3 focus-within:border-neutral-600 transition-colors">
+            {attachedFile && (
+              <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl">
+                <FileText className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                <span className="text-xs text-neutral-300 truncate flex-1">{attachedFile.name}</span>
+                <span className="text-[10px] text-neutral-500">{(attachedFile.content.length / 1024).toFixed(1)}KB</span>
+                <button onClick={() => setAttachedFile(null)} className="w-5 h-5 rounded hover:bg-neutral-700 flex items-center justify-center">
+                  <X className="w-3 h-3 text-neutral-500" />
+                </button>
+              </div>
+            )}
+            <div className="flex gap-2 items-end bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3 focus-within:border-neutral-600 transition-colors">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.md,.csv,.text,text/plain,text/markdown"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="flex-shrink-0 w-9 h-9 rounded-xl hover:bg-neutral-800 flex items-center justify-center transition-colors disabled:opacity-30"
+                title="上传文件 (txt/md/csv, 最大100KB)"
+              >
+                <Paperclip className="w-4 h-4 text-neutral-400" />
+              </button>
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={isLoading ? 'AI 正在思考...' : '输入您的法律问题...'}
+                placeholder={isLoading ? 'AI 正在思考...' : '输入您的法律问题，或上传合同文件...'}
                 disabled={isLoading}
                 rows={1}
                 className="flex-1 bg-transparent text-white text-sm placeholder-neutral-600 outline-none resize-none"
@@ -424,14 +478,14 @@ export default function ChatPage() {
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || isLoading}
+                disabled={(!input.trim() && !attachedFile) || isLoading}
                 className="flex-shrink-0 w-9 h-9 bg-white text-black rounded-xl flex items-center justify-center hover:bg-neutral-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4" />
               </button>
             </div>
             <p className="text-[11px] text-neutral-600 mt-2 text-center">
-              Enter 发送 · Shift+Enter 换行 · 基于 DeepSeek-V3.2 模型
+              Enter 发送 · Shift+Enter 换行 · 支持上传 txt/md/csv 文件
             </p>
           </div>
         </div>
