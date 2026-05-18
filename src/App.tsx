@@ -12,6 +12,7 @@ const CaseLibrary = lazy(() => import('./pages/CaseLibrary'))
 const RightsGuide = lazy(() => import('./pages/RightsGuide'))
 const Quiz = lazy(() => import('./pages/Quiz'))
 const About = lazy(() => import('./pages/About'))
+const Auth = lazy(() => import('./pages/Auth'))
 
 function HomePage() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/guide" element={<RightsGuide />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/about/:page" element={<About />} />
+        <Route path="/auth" element={<Auth />} />
       </Routes>
     </Suspense>
   )

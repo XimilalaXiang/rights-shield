@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Shield, Menu, X } from 'lucide-react'
+import { Shield, Menu, X, User, LogOut } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 interface NavLink {
   label: string
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const location = useLocation()
+  const { user, isAuthenticated, signOut } = useAuth()
 
   const activeIndex = navLinks.findIndex(link => link.path === location.pathname)
 
@@ -121,6 +123,19 @@ export default function Navbar() {
             >
               AI 咨询
             </Link>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-400 max-w-[100px] truncate">{user?.email}</span>
+                <button onClick={signOut} className="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors" title="退出登录">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/auth" className="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors" title="登录">
+                <User className="w-4 h-4" />
+              </Link>
+            )}
           </div>
 
           {/* Mobile toggle */}
