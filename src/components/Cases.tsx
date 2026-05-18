@@ -1,9 +1,6 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { AlertTriangle, ArrowRight } from 'lucide-react'
-
-interface CasesProps {
-  onOpenChat: () => void
-}
 
 const cases = [
   {
@@ -32,7 +29,7 @@ const cases = [
   },
 ]
 
-export default function Cases({ onOpenChat }: CasesProps) {
+export default function Cases() {
   return (
     <section id="cases" className="py-20 px-4 bg-black">
       <div className="container mx-auto">
@@ -103,13 +100,13 @@ export default function Cases({ onOpenChat }: CasesProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <button
-            onClick={onOpenChat}
+          <Link
+            to="/chat"
             className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-neutral-200 transition-all duration-300"
           >
             立即检查我的合同
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </motion.div>
       </div>
     </section>

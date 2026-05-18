@@ -1,21 +1,16 @@
 import { ArrowRight, Shield, FileText, Scale } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { ParticleTextEffect } from './ParticleTextEffect'
 
-interface HeroProps {
-  onOpenChat: () => void
-}
-
-export default function Hero({ onOpenChat }: HeroProps) {
+export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col justify-between overflow-hidden">
-      {/* Full-screen particle canvas */}
       <div className="absolute inset-0 z-0">
         <ParticleTextEffect
           words={['权盾', 'RIGHTS SHIELD', '消费维权', '法律助手']}
         />
       </div>
 
-      {/* Bottom content */}
       <div className="container mx-auto text-center relative z-10 pb-12 pt-[55vh] px-4">
         <div className="max-w-3xl mx-auto">
           <p className="text-lg md:text-xl text-neutral-400 mb-8 leading-relaxed">
@@ -23,15 +18,14 @@ export default function Hero({ onOpenChat }: HeroProps) {
             <span className="text-white font-medium">侵权陷阱</span>，守护您的消费权益
           </p>
 
-          {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button
-              onClick={onOpenChat}
+            <Link
+              to="/chat"
               className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-neutral-200 transition-all duration-300"
             >
               免费咨询
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
             <a
               href="#features"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-neutral-700 text-white font-medium rounded-lg hover:bg-neutral-900 transition-all duration-300"
@@ -40,7 +34,6 @@ export default function Hero({ onOpenChat }: HeroProps) {
             </a>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
             {[
               { icon: Shield, label: '保护案例', value: '1,200+' },
