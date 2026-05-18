@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Send, ChevronDown } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 
 interface AIChatProps {
   isOpen: boolean
@@ -14,6 +15,24 @@ interface Message {
   content: string
   time: string
 }
+
+const API_URL = '/api/chat'
+const MODEL = 'deepseek-ai/DeepSeek-V4-Flash'
+
+const SYSTEM_PROMPT = `你是"权盾 AI 法律助手"，专注于中国汽车消费者权益保护领域。
+
+你的职责：
+1. 分析购车合同条款，识别霸王条款和侵权内容
+2. 引用相关法律法规（消费者权益保护法、民法典、合同法等）
+3. 提供维权建议和投诉路径
+4. 评估条款风险等级
+
+回答要求：
+- 简洁专业，通俗易懂
+- 引用具体法条时标注条款编号
+- 给出可操作的建议
+- 如果问题超出汽车消费领域，礼貌引导回主题
+- 用中文回答`
 
 const quickQuestions = [
   '定金不退合法吗？',
@@ -35,6 +54,7 @@ export default function AIChat({ isOpen, onToggle, onClose }: AIChatProps) {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -44,9 +64,91 @@ export default function AIChat({ isOpen, onToggle, onClose }: AIChatProps) {
     if (isOpen) inputRef.current?.focus()
   }, [isOpen])
 
+  const callAPI = useCallback(async (allMessages: Message[]) => {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    const apiMessages = [
+      { role: 'system' as const, content: SYSTEM_PROMPT },
+      ...allMessages.map(m => ({ role: m.role, content: m.content })),
+    ]
+
+    const assistantId = Date.now() + 1
+    setMessages(prev => [...prev, {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+    }])
+    setIsTyping(true)
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: apiMessages,
+          stream: true,
+          max_tokens: 1024,
+          temperature: 0.7,
+        }),
+        signal: controller.signal,
+      })
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`)
+      }
+
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error('No reader')
+
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const data = line.slice(6).trim()
+          if (data === '[DONE]') break
+
+          try {
+            const parsed = JSON.parse(data)
+            const delta = parsed.choices?.[0]?.delta?.content
+            if (delta) {
+              accumulated += delta
+              const current = accumulated
+              setMessages(prev => prev.map(m =>
+                m.id === assistantId ? { ...m, content: current } : m
+              ))
+            }
+          } catch {
+            // skip parse errors
+          }
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') return
+      setMessages(prev => prev.map(m =>
+        m.id === assistantId
+          ? { ...m, content: '抱歉，网络连接出现问题，请稍后重试。' }
+          : m
+      ))
+    } finally {
+      setIsTyping(false)
+    }
+  }, [])
+
   const sendMessage = (text?: string) => {
     const content = text || input.trim()
-    if (!content) return
+    if (!content || isTyping) return
 
     const userMsg: Message = {
       id: Date.now(),
@@ -54,27 +156,12 @@ export default function AIChat({ isOpen, onToggle, onClose }: AIChatProps) {
       content,
       time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
     }
-    setMessages(prev => [...prev, userMsg])
+
+    const newMessages = [...messages, userMsg]
+    setMessages(newMessages)
     setInput('')
-    setIsTyping(true)
 
-    setTimeout(() => {
-      const responses: Record<string, string> = {
-        '定金不退合法吗？': '根据《民法典》第五百八十七条：收受定金的一方不履行债务或者履行债务不符合约定，致使不能实现合同目的的，应当双倍返还定金。\n\n⚠️ 关键点：如果是因为商家原因（如车辆质量问题、无法按时交车等）导致交易无法完成，定金必须退还，甚至需要双倍返还。\n\n💡 建议：保留好定金收据和沟通记录。',
-        '如何识别霸王条款？': '常见霸王条款特征：\n\n1️⃣ "最终解释权归本店所有" — 无效\n2️⃣ "定金一律不退" — 违反民法典\n3️⃣ "必须在本店购买保险" — 侵犯选择权\n4️⃣ "逾期提车不承担违约责任" — 不合理免责\n\n📋 法律依据：《消费者权益保护法》第二十六条明确规定，经营者不得以格式条款排除消费者权利。',
-        '被强制搭售保险怎么办？': '强制搭售保险属于违法行为：\n\n⚖️ 《消费者权益保护法》第九条：消费者有自主选择权\n⚖️ 《反不正当竞争法》第十二条：不得强制搭售\n\n🔧 维权步骤：\n1. 拒绝购买并保留证据\n2. 向 12315 投诉\n3. 向银保监会举报（保险问题）\n4. 必要时提起诉讼',
-        '提车时间延迟如何维权？': '延迟交车维权指南：\n\n📝 首先检查合同中的交车时间条款是否明确\n⏰ 如果超过约定时间：\n- 发送书面催告函\n- 要求支付违约金\n- 超过 30 天可解除合同\n\n💰 赔偿标准：\n- 合同有约定：按约定执行\n- 无约定：可主张实际损失\n\n🔍 保留好合同、付款凭证、沟通记录',
-      }
-
-      const assistantMsg: Message = {
-        id: Date.now() + 1,
-        role: 'assistant',
-        content: responses[content] || `感谢您的咨询。关于"${content}"的问题：\n\n根据《消费者权益保护法》和《民法典》相关规定，建议您：\n\n1. 仔细审查合同条款\n2. 保留相关证据\n3. 必要时寻求专业律师帮助\n\n如需更详细的分析，请将具体合同条款发给我。`,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-      }
-      setMessages(prev => [...prev, assistantMsg])
-      setIsTyping(false)
-    }, 800)
+    callAPI(newMessages.filter(m => m.id !== 1))
   }
 
   return (
@@ -134,7 +221,13 @@ export default function AIChat({ isOpen, onToggle, onClose }: AIChatProps) {
                         : 'bg-neutral-900 text-neutral-200 border border-neutral-800 rounded-bl-md'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
+                    {msg.role === 'assistant' ? (
+                      <div className="text-sm leading-relaxed prose-chat">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
+                    )}
                     <p className={`text-[10px] mt-1.5 ${msg.role === 'user' ? 'text-neutral-500' : 'text-neutral-600'}`}>
                       {msg.time}
                     </p>
