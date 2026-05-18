@@ -17,7 +17,7 @@ export interface Conversation {
 
 const STORAGE_KEY = 'rights_shield_conversations'
 const API_URL = '/api/chat'
-const MODEL = 'deepseek-ai/DeepSeek-V4-Flash'
+const MODEL = 'deepseek-ai/DeepSeek-V3.2'
 
 const SYSTEM_PROMPT = `你是"权盾 AI 法律助手"，专注于中国汽车消费者权益保护领域。
 

@@ -301,7 +301,7 @@ export default function ChatPage() {
                 <h1 className="text-sm font-semibold">
                   {activeConversation?.title || '权盾 AI 助手'}
                 </h1>
-                <p className="text-[11px] text-neutral-500">DeepSeek-V4-Flash · 汽车消费权益</p>
+                <p className="text-[11px] text-neutral-500">DeepSeek-V3.2 · 汽车消费权益</p>
               </div>
             </div>
           </div>
@@ -414,7 +414,7 @@ export default function ChatPage() {
               </button>
             </div>
             <p className="text-[11px] text-neutral-600 mt-2 text-center">
-              Enter 发送 · Shift+Enter 换行 · 基于 DeepSeek-V4-Flash 模型
+              Enter 发送 · Shift+Enter 换行 · 基于 DeepSeek-V3.2 模型
             </p>
           </div>
         </div>
