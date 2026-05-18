@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Features from './components/Features'
 import Cases from './components/Cases'
+import Testimonials from './components/Testimonials'
 import Footer from './components/Footer'
 import './saas-dark.css'
 
@@ -17,6 +18,7 @@ function HomePage() {
       <main className="pt-0">
         <Hero />
         <Features />
+        <Testimonials />
         <Cases />
       </main>
       <Footer />
