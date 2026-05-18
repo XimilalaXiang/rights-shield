@@ -43,12 +43,12 @@ export default function Hero() {
               [ AI 咨询 ]
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a
-              href="#cases"
+            <Link
+              to="/cases"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-neutral-700 text-white/80 font-medium rounded-lg hover:bg-white/5 hover:border-neutral-500 transition-all duration-300"
             >
               [ 查看案例 ]
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import Footer from './components/Footer'
 import './saas-dark.css'
 
 const ChatPage = lazy(() => import('./pages/ChatPage'))
+const CaseLibrary = lazy(() => import('./pages/CaseLibrary'))
 
 function HomePage() {
   return (
@@ -36,6 +37,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/cases" element={<CaseLibrary />} />
       </Routes>
     </Suspense>
   )
