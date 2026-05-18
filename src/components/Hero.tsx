@@ -5,14 +5,14 @@ import { ParticleTextEffect } from './ParticleTextEffect'
 export default function Hero() {
   return (
     <section id="top" className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Particle background - upper portion */}
-      <div className="absolute inset-x-0 top-0 h-[45%] z-0">
+      {/* Particle background - full screen */}
+      <div className="absolute inset-0 z-0">
         <ParticleTextEffect
           words={['权盾', 'RIGHTS SHIELD', '消费维权', '法律助手']}
         />
       </div>
 
-      {/* Hero content - positioned in lower area to avoid particle overlap */}
+      {/* Hero content - pushed down to avoid overlap with particle text */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-end px-4 pb-4">
         <div className="max-w-3xl mx-auto text-center">
           {/* Pill badge */}
