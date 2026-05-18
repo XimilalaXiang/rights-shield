@@ -4,7 +4,7 @@ import { ParticleTextEffect } from './ParticleTextEffect'
 
 export default function Hero() {
   return (
-    <section id="top" className="relative min-h-screen flex flex-col overflow-hidden">
+    <section id="top" className="relative min-h-[110vh] flex flex-col overflow-hidden">
       {/* Particle background - full screen */}
       <div className="absolute inset-0 z-0">
         <ParticleTextEffect
@@ -54,7 +54,7 @@ export default function Hero() {
       </div>
 
       {/* Bottom stats + scroll indicator */}
-      <div className="relative z-10 pb-8 px-4">
+      <div className="relative z-10 pb-12 pt-6 px-4">
         <div className="max-w-lg mx-auto grid grid-cols-3 gap-6 mb-8">
           {[
             { icon: Shield, label: '保护案例', value: '1,200+' },
