@@ -11,6 +11,7 @@ const ChatPage = lazy(() => import('./pages/ChatPage'))
 const CaseLibrary = lazy(() => import('./pages/CaseLibrary'))
 const RightsGuide = lazy(() => import('./pages/RightsGuide'))
 const Quiz = lazy(() => import('./pages/Quiz'))
+const About = lazy(() => import('./pages/About'))
 
 function HomePage() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/cases" element={<CaseLibrary />} />
         <Route path="/guide" element={<RightsGuide />} />
         <Route path="/quiz" element={<Quiz />} />
+        <Route path="/about/:page" element={<About />} />
       </Routes>
     </Suspense>
   )

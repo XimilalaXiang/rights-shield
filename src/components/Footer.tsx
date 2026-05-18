@@ -1,11 +1,25 @@
 import { Shield } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+const aboutLinks = [
+  { label: '研究课题', path: '/about/research' },
+  { label: '团队介绍', path: '/about/team' },
+  { label: '使用指南', path: '/about/usage' },
+  { label: '联系我们', path: '/about/contact' },
+]
+
+const featureLinks = [
+  { label: 'AI 咨询', path: '/chat' },
+  { label: '案例库', path: '/cases' },
+  { label: '维权指南', path: '/guide' },
+  { label: '风险检测', path: '/quiz' },
+]
 
 export default function Footer() {
   return (
     <footer id="about" className="py-16 px-4 border-t border-neutral-800/50">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <Shield className="w-5 h-5 text-white" />
@@ -17,15 +31,14 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">功能</h4>
             <ul className="space-y-2.5">
-              {['合同扫描', '风险评估', '法律咨询', '案例查询'].map(item => (
-                <li key={item}>
-                  <a href="#features" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
-                    {item}
-                  </a>
+              {featureLinks.map(item => (
+                <li key={item.path}>
+                  <Link to={item.path} className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -34,18 +47,17 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">关于</h4>
             <ul className="space-y-2.5">
-              {['研究课题', '团队介绍', '使用指南', '联系我们'].map(item => (
-                <li key={item}>
-                  <a href="#" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
-                    {item}
-                  </a>
+              {aboutLinks.map(item => (
+                <li key={item.path}>
+                  <Link to={item.path} className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-neutral-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-neutral-600">
             © 2026 权盾 RightsShield · 中山大学法学院研究项目
