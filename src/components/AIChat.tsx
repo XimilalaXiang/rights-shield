@@ -4,6 +4,7 @@ import { MessageSquare, Send, ChevronDown, CircleStop, RefreshCw, Copy, Check, T
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAIChat, type Message } from '../hooks/useAIChat'
+import ThinkingBlock from './ThinkingBlock'
 
 interface AIChatProps {
   isOpen: boolean
@@ -18,7 +19,7 @@ const quickQuestions = [
   { label: '延迟交车维权', prompt: '合同约定了提车时间但商家一直延迟交车，我该如何维权？' },
 ]
 
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({ message, isStreaming = false }: { message: Message; isStreaming?: boolean }) {
   const [copied, setCopied] = useState(false)
   const isUser = message.role === 'user'
 
@@ -41,37 +42,50 @@ function MessageBubble({ message }: { message: Message }) {
       >
         {isUser ? (
           <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
-        ) : message.content ? (
-          <div className="text-sm leading-relaxed prose-chat break-words">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
-                li: ({ children }) => <li className="text-sm">{children}</li>,
-                strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
-                code: ({ children, className }) => {
-                  const isBlock = !!className
-                  return isBlock ? (
-                    <code className="block p-3 bg-black/50 rounded-lg text-xs font-mono border border-neutral-800 overflow-x-auto whitespace-pre-wrap">{children}</code>
-                  ) : (
-                    <code className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">{children}</code>
-                  )
-                },
-                blockquote: ({ children }) => (
-                  <blockquote className="border-l-2 border-neutral-600 pl-3 my-2 text-neutral-400">{children}</blockquote>
-                ),
-                table: ({ children }) => (
-                  <div className="overflow-x-auto my-2"><table className="min-w-full border-collapse text-xs">{children}</table></div>
-                ),
-                th: ({ children }) => <th className="px-2 py-1.5 text-left font-semibold border-b border-neutral-700 text-white">{children}</th>,
-                td: ({ children }) => <td className="px-2 py-1.5 border-b border-neutral-800">{children}</td>,
-              }}
-            >
-              {message.content}
-            </ReactMarkdown>
-          </div>
+        ) : message.content || message.reasoning ? (
+          <>
+            {message.reasoning && (
+              <ThinkingBlock reasoning={message.reasoning} isStreaming={isStreaming && !message.content} />
+            )}
+            {message.content ? (
+              <div className="text-sm leading-relaxed prose-chat break-words">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                    li: ({ children }) => <li className="text-sm">{children}</li>,
+                    strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
+                    code: ({ children, className }) => {
+                      const isBlock = !!className
+                      return isBlock ? (
+                        <code className="block p-3 bg-black/50 rounded-lg text-xs font-mono border border-neutral-800 overflow-x-auto whitespace-pre-wrap">{children}</code>
+                      ) : (
+                        <code className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">{children}</code>
+                      )
+                    },
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-2 border-neutral-600 pl-3 my-2 text-neutral-400">{children}</blockquote>
+                    ),
+                    table: ({ children }) => (
+                      <div className="overflow-x-auto my-2"><table className="min-w-full border-collapse text-xs">{children}</table></div>
+                    ),
+                    th: ({ children }) => <th className="px-2 py-1.5 text-left font-semibold border-b border-neutral-700 text-white">{children}</th>,
+                    td: ({ children }) => <td className="px-2 py-1.5 border-b border-neutral-800">{children}</td>,
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <div className="flex gap-1.5 py-1 mt-1">
+                <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex gap-1.5 py-1">
             <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -232,9 +246,12 @@ export default function AIChat({ isOpen, onToggle, onClose }: AIChatProps) {
                 </div>
               ) : (
                 <>
-                  {messages.map(msg => (
+                  {messages.map((msg, idx) => (
                     <div key={msg.id} className="group">
-                      <MessageBubble message={msg} />
+                      <MessageBubble
+                        message={msg}
+                        isStreaming={isLoading && msg.role === 'assistant' && idx === messages.length - 1}
+                      />
                     </div>
                   ))}
 

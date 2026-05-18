@@ -9,6 +9,7 @@ import {
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useConversations, type Message, type Conversation } from '../hooks/useConversations'
+import ThinkingBlock from '../components/ThinkingBlock'
 
 const quickQuestions = [
   { label: '🔍 定金不退合法吗？', prompt: '购车定金不退合法吗？商家以各种理由拒绝退还定金，我该怎么办？' },
@@ -19,7 +20,7 @@ const quickQuestions = [
   { label: '🔧 新车质量问题', prompt: '刚买的新车发现有质量问题，可以退换车吗？三包政策是怎么规定的？' },
 ]
 
-function ChatBubble({ message }: { message: Message }) {
+function ChatBubble({ message, isStreaming = false }: { message: Message; isStreaming?: boolean }) {
   const [copied, setCopied] = useState(false)
   const isUser = message.role === 'user'
 
@@ -40,37 +41,50 @@ function ChatBubble({ message }: { message: Message }) {
       }`}>
         {isUser ? (
           <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
-        ) : message.content ? (
-          <div className="text-sm leading-relaxed prose-chat break-words">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
-                li: ({ children }) => <li className="text-sm">{children}</li>,
-                strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
-                code: ({ children, className }) => {
-                  const isBlock = !!className
-                  return isBlock ? (
-                    <code className="block p-3 bg-black/60 rounded-lg text-xs font-mono border border-neutral-700 overflow-x-auto whitespace-pre-wrap my-2">{children}</code>
-                  ) : (
-                    <code className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">{children}</code>
-                  )
-                },
-                blockquote: ({ children }) => (
-                  <blockquote className="border-l-2 border-neutral-600 pl-3 my-2 text-neutral-400">{children}</blockquote>
-                ),
-                table: ({ children }) => (
-                  <div className="overflow-x-auto my-2"><table className="min-w-full border-collapse text-xs">{children}</table></div>
-                ),
-                th: ({ children }) => <th className="px-2 py-1.5 text-left font-semibold border-b border-neutral-700 text-white">{children}</th>,
-                td: ({ children }) => <td className="px-2 py-1.5 border-b border-neutral-800">{children}</td>,
-              }}
-            >
-              {message.content}
-            </ReactMarkdown>
-          </div>
+        ) : message.content || message.reasoning ? (
+          <>
+            {message.reasoning && (
+              <ThinkingBlock reasoning={message.reasoning} isStreaming={isStreaming && !message.content} />
+            )}
+            {message.content ? (
+              <div className="text-sm leading-relaxed prose-chat break-words">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>,
+                    li: ({ children }) => <li className="text-sm">{children}</li>,
+                    strong: ({ children }) => <strong className="text-white font-semibold">{children}</strong>,
+                    code: ({ children, className }) => {
+                      const isBlock = !!className
+                      return isBlock ? (
+                        <code className="block p-3 bg-black/60 rounded-lg text-xs font-mono border border-neutral-700 overflow-x-auto whitespace-pre-wrap my-2">{children}</code>
+                      ) : (
+                        <code className="px-1.5 py-0.5 bg-white/10 rounded text-xs font-mono">{children}</code>
+                      )
+                    },
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-2 border-neutral-600 pl-3 my-2 text-neutral-400">{children}</blockquote>
+                    ),
+                    table: ({ children }) => (
+                      <div className="overflow-x-auto my-2"><table className="min-w-full border-collapse text-xs">{children}</table></div>
+                    ),
+                    th: ({ children }) => <th className="px-2 py-1.5 text-left font-semibold border-b border-neutral-700 text-white">{children}</th>,
+                    td: ({ children }) => <td className="px-2 py-1.5 border-b border-neutral-800">{children}</td>,
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <div className="flex gap-1.5 py-1 mt-1">
+                <span className="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex gap-1.5 py-1">
             <span className="w-2 h-2 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -356,14 +370,17 @@ export default function ChatPage() {
           ) : (
             <div className="max-w-3xl mx-auto px-4 py-6">
               <AnimatePresence initial={false}>
-                {messages.map(msg => (
+                {messages.map((msg, idx) => (
                   <motion.div
                     key={msg.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChatBubble message={msg} />
+                    <ChatBubble
+                      message={msg}
+                      isStreaming={isLoading && msg.role === 'assistant' && idx === messages.length - 1}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>

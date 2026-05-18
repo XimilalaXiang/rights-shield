@@ -207,3 +207,11 @@ body {
 .prose-chat h3 { font-size: 0.95em; }
 .prose-chat hr { border-color: #333; margin: 0.75em 0; }
 .prose-chat a { color: #93c5fd; text-decoration: underline; }
+
+/* Thinking block prose */
+.prose-thinking p { margin-bottom: 0.4em; }
+.prose-thinking p:last-child { margin-bottom: 0; }
+.prose-thinking ul, .prose-thinking ol { padding-left: 1em; margin: 0.3em 0; }
+.prose-thinking li { margin-bottom: 0.15em; }
+.prose-thinking code { background: rgba(255,255,255,0.05); padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.9em; }
+.prose-thinking strong { color: #a3a3a3; }

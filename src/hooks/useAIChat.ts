@@ -4,6 +4,7 @@ export interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  reasoning?: string
   timestamp: number
 }
 
@@ -78,6 +79,7 @@ export function useAIChat() {
 
       const decoder = new TextDecoder()
       let accumulated = ''
+      let reasoningAccumulated = ''
 
       while (true) {
         const { done, value } = await reader.read()
@@ -89,12 +91,28 @@ export function useAIChat() {
           if (data === '[DONE]') break
           try {
             const parsed = JSON.parse(data)
-            const delta = parsed.choices?.[0]?.delta?.content
-            if (delta) {
-              accumulated += delta
-              const current = accumulated
+            const delta = parsed.choices?.[0]?.delta
+            const contentDelta = delta?.content
+            const reasoningDelta = delta?.reasoning_content
+            let changed = false
+
+            if (reasoningDelta) {
+              reasoningAccumulated += reasoningDelta
+              changed = true
+            }
+            if (contentDelta) {
+              accumulated += contentDelta
+              changed = true
+            }
+
+            if (changed) {
+              const currentContent = accumulated
+              const currentReasoning = reasoningAccumulated
               setMessages(prev => {
-                const next = prev.map(m => m.id === assistantMsg.id ? { ...m, content: current } : m)
+                const next = prev.map(m => m.id === assistantMsg.id
+                  ? { ...m, content: currentContent, reasoning: currentReasoning || undefined }
+                  : m
+                )
                 saveMessages(next)
                 return next
               })
