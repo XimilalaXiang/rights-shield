@@ -16,7 +16,7 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="noise-overlay" />
-      <Navbar onOpenChat={() => setChatOpen(true)} />
+      <Navbar />
       <main className="pt-0">
         <Hero onOpenChat={() => setChatOpen(true)} />
         <Features />

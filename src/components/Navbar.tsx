@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Menu, X, MessageSquare } from 'lucide-react'
+import { Shield, Menu, X } from 'lucide-react'
 
-interface NavbarProps {
-  onOpenChat: () => void
-}
-
-export default function Navbar({ onOpenChat }: NavbarProps) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -32,13 +28,11 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
           <a href="#" className="flex items-center gap-2.5">
             <Shield className="w-6 h-6 text-white" />
             <span className="text-lg font-bold text-white tracking-tight">权盾</span>
           </a>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map(link => (
               <a
@@ -51,20 +45,12 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
             ))}
             <Link
               to="/chat"
-              className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
-            >
-              <MessageSquare className="w-4 h-4" />
-              AI 对话
-            </Link>
-            <button
-              onClick={onOpenChat}
               className="px-5 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-neutral-200 transition-colors"
             >
               免费咨询
-            </button>
+            </Link>
           </div>
 
-          {/* Mobile menu toggle */}
           <button
             className="md:hidden text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -73,7 +59,6 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden pb-4 border-t border-neutral-800 mt-2 pt-4">
             {navLinks.map(link => (
@@ -88,17 +73,11 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
             ))}
             <Link
               to="/chat"
-              className="block py-2 text-neutral-400 hover:text-white transition-colors"
+              className="mt-3 block w-full px-5 py-2.5 bg-white text-black text-sm font-semibold rounded-lg text-center"
               onClick={() => setMobileOpen(false)}
             >
-              AI 对话
-            </Link>
-            <button
-              onClick={() => { onOpenChat(); setMobileOpen(false) }}
-              className="mt-3 w-full px-5 py-2.5 bg-white text-black text-sm font-semibold rounded-lg"
-            >
               免费咨询
-            </button>
+            </Link>
           </div>
         )}
       </div>
