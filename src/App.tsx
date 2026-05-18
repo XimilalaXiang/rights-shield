@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Features from './components/Features'
-import CaseCTA from './components/CaseCTA'
 import Testimonials from './components/Testimonials'
 import Footer from './components/Footer'
 import './saas-dark.css'
@@ -20,7 +19,6 @@ function HomePage() {
         <Hero />
         <Features />
         <Testimonials />
-        <CaseCTA />
       </main>
       <Footer />
     </div>

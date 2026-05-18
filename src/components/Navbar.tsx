@@ -4,50 +4,33 @@ import { Shield, Menu, X } from 'lucide-react'
 
 interface NavLink {
   label: string
-  href: string
+  path: string
 }
 
 const navLinks: NavLink[] = [
-  { label: '首页', href: '#top' },
-  { label: '功能', href: '#features' },
-  { label: '案例', href: '#cases' },
-  { label: '关于', href: '#about' },
+  { label: '首页', path: '/' },
+  { label: '案例库', path: '/cases' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const location = useLocation()
 
+  const activeIndex = navLinks.findIndex(link => link.path === location.pathname)
+
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-
-      if (location.pathname !== '/') return
-      const scrollPos = window.scrollY + 150
-      let currentActive: number = 0
-
-      for (let i = navLinks.length - 1; i >= 1; i--) {
-        const id = navLinks[i].href.replace('#', '')
-        const section = document.getElementById(id)
-        if (section && scrollPos >= section.offsetTop) {
-          currentActive = i
-          break
-        }
-      }
-      setActiveIndex(currentActive)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [location.pathname])
+  }, [])
 
   const updateIndicator = useCallback((index: number | null) => {
-    const targetIndex = index ?? activeIndex
+    const targetIndex = index ?? (activeIndex >= 0 ? activeIndex : null)
     if (targetIndex === null || !linkRefs.current[targetIndex]) {
       setIndicatorStyle(prev => ({ ...prev, opacity: 0 }))
       return
@@ -72,8 +55,6 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', handleResize)
   }, [hoveredIndex, updateIndicator])
 
-  const isHome = location.pathname === '/'
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -97,42 +78,40 @@ export default function Navbar() {
 
           {/* Desktop nav - pill style */}
           <div className="hidden md:flex items-center gap-4">
-            {isHome && (
-              <div className="relative flex items-center bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
-                {/* Sliding indicator */}
-                <div
-                  className="absolute top-1 bottom-1 bg-white/10 rounded-full transition-all duration-300 ease-out pointer-events-none"
-                  style={{
-                    left: indicatorStyle.left,
-                    width: indicatorStyle.width,
-                    opacity: indicatorStyle.opacity,
-                    boxShadow: hoveredIndex !== null
-                      ? '0 0 20px rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.1)'
-                      : 'none',
-                  }}
-                />
+            <div className="relative flex items-center bg-white/5 backdrop-blur-sm rounded-full p-1 border border-white/10">
+              {/* Sliding indicator */}
+              <div
+                className="absolute top-1 bottom-1 bg-white/10 rounded-full transition-all duration-300 ease-out pointer-events-none"
+                style={{
+                  left: indicatorStyle.left,
+                  width: indicatorStyle.width,
+                  opacity: indicatorStyle.opacity,
+                  boxShadow: hoveredIndex !== null || activeIndex >= 0
+                    ? '0 0 20px rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.1)'
+                    : 'none',
+                }}
+              />
 
-                {navLinks.map((link, index) => (
-                  <a
-                    key={link.label}
-                    ref={(el) => { linkRefs.current[index] = el }}
-                    href={link.href}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    className={`relative z-10 px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 ${
-                      activeIndex === index ? 'text-white' : 'text-white/60 hover:text-white'
-                    }`}
-                  >
-                    <span className="relative">
-                      {link.label}
-                      {activeIndex === index && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_6px_white]" />
-                      )}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            )}
+              {navLinks.map((link, index) => (
+                <Link
+                  key={link.path}
+                  ref={(el) => { linkRefs.current[index] = el }}
+                  to={link.path}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  className={`relative z-10 px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 ${
+                    activeIndex === index ? 'text-white' : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  <span className="relative">
+                    {link.label}
+                    {activeIndex === index && (
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_6px_white]" />
+                    )}
+                  </span>
+                </Link>
+              ))}
+            </div>
 
             <Link
               to="/chat"
@@ -155,7 +134,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu - fullscreen overlay */}
+      {/* Mobile menu */}
       <div
         className={`md:hidden fixed inset-0 top-16 z-40 transition-all duration-300 ${
           mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -166,10 +145,10 @@ export default function Navbar() {
           mobileOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'
         }`}>
           <nav className="flex flex-col space-y-2">
-            {isHome && navLinks.map((link, index) => (
-              <a
-                key={link.label}
-                href={link.href}
+            {navLinks.map((link, index) => (
+              <Link
+                key={link.path}
+                to={link.path}
                 onClick={() => setMobileOpen(false)}
                 className={`text-lg py-4 px-4 rounded-xl transition-all duration-300 ${
                   activeIndex === index
@@ -179,7 +158,7 @@ export default function Navbar() {
                 style={{ transitionDelay: mobileOpen ? `${index * 50}ms` : '0ms' }}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <Link
               to="/chat"
