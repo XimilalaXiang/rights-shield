@@ -4,7 +4,7 @@ import { ParticleTextEffect } from './ParticleTextEffect'
 
 export default function Hero() {
   return (
-    <section id="top" className="relative min-h-[126vh] flex flex-col overflow-hidden">
+    <section id="top" className="relative min-h-[124vh] flex flex-col overflow-hidden">
       {/* Particle background - full screen */}
       <div className="absolute inset-0 z-0">
         <ParticleTextEffect
