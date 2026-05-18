@@ -10,6 +10,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: '首页', path: '/' },
   { label: '案例库', path: '/cases' },
+  { label: '维权指南', path: '/guide' },
 ]
 
 export default function Navbar() {
