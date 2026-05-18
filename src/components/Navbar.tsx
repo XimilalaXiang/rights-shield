@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Shield, Menu, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Shield, Menu, X, MessageSquare } from 'lucide-react'
 
 interface NavbarProps {
   onOpenChat: () => void
@@ -48,6 +49,13 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/chat"
+              className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              AI 对话
+            </Link>
             <button
               onClick={onOpenChat}
               className="px-5 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-neutral-200 transition-colors"
@@ -78,6 +86,13 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/chat"
+              className="block py-2 text-neutral-400 hover:text-white transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              AI 对话
+            </Link>
             <button
               onClick={() => { onOpenChat(); setMobileOpen(false) }}
               className="mt-3 w-full px-5 py-2.5 bg-white text-black text-sm font-semibold rounded-lg"
